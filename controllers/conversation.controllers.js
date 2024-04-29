@@ -1,32 +1,28 @@
 import ConversationService from "../services/conversation.services.js";
 
-
-// export const createConversation = async (req, res) => {
-//     const { userIds } = req.body;
-//     console.log({ userIds });
-//     const conversation = await Conversation.create({
-//       members: userIds,
-//     });
-//     return res.status(201).json({ data: conversation });
-//   };
-
-
 class ConversationController {
-
-    // async create
-    
-
-
-  async getById(req, res) {
+  async create(req, res) {
     try {
-        const {userId} = req.params;
-      const conversation = await ConversationService.findById(userId);
-      return res.status(200).json({ data: conversation });
+      const { userIds } = req.body;
+      const conversation = await ConversationService.createConversation({
+        members: userIds,
+      });
+      return res.status(201).json({ data: conversation });
     } catch (err) {
-        return res.status(404).json({message: "cant not find"});
+      return res.status(404).json({ message: "cant not create" });
     }
   }
 
+  async getById(req, res) {
+    try {
+      const { userId } = req.params;
+      console.log(req.params)
+      const conversation = await ConversationService.getCoversationByUserId(userId);
+      return res.status(201).json({ data: conversation });
+    } catch (err) {
+      return res.status(404).json({ message: "cant not find" });
+    }
+  }
 }
 const conversationController = new ConversationController();
 export default conversationController;

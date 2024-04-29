@@ -5,7 +5,7 @@ import ConversationController from "../controllers/conversation.controllers.js";
 
 const router = express.Router();
 
-// router.post("/", createConversation);
+ router.post("/", ConversationController.create);
 router.get("/:userId", ConversationController.getById);
 
 
