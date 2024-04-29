@@ -22,44 +22,17 @@ class MessageController{
       }
     };
 
-
-// export const sendMessage = async (req, res) => {
-//   try {
-//     const { conversationId, text, images, files, recallAt, deleteAt, senderId } = req.body;
-//     const uploadedFilesUrls = req.files?.map((file) => file.location) ?? [];
-//     const newMessage = new Message({
-//       conversationId: conversationId,
-//       text: text,
-//       images: uploadedFilesUrls,
-//       files: uploadedFilesUrls,
-//       recallAt: recallAt,
-//       deleteAt: deleteAt,
-//       senderId: senderId,
-//     });
-//     const savedMessage = await newMessage.save();
-
-//     return res.status(201).json({ message: savedMessage , uploadedFiles: uploadedFilesUrls});
-//   } catch (error) {
-//     return res.status(500).json({ error: "Error sending message", details: error.message });
-//   }
-// };
-// export const revokedMessage = async (req, res) => {
-//     try {
-//       const { senderId } = req.params;
-//       console.log({ senderId });
-//       const message = await Message.findById(senderId);
-//       if (!message) {
-//         return res.status(404).json({ error: "Message not found" });
-//       }
-//       await Message.findByIdAndDelete(senderId);
-//       res
-//         .status(200)
-//         .json({ succes: true, message: "Message delete successfully" });
-//     } catch (error) {
-//       console.error("Error revoking message:", error);
-//       res.status(500).json({ error: "Internal server error" });
-//     }
-//   };
+     async revoked (req, res){
+        try {
+            const { messageId } = req.params;
+            const result = await MessageService.revokeMessage(messageId);
+            res.status(200).json(result);
+          } catch (error) {
+            console.error("Error revoking message:", error);
+            res.status(500).json({ error: "Internal server error" });
+          }
+        };
+     }
 
 
 // export const getAllMessages = async (req, res) => {
@@ -73,6 +46,6 @@ class MessageController{
 //   }
 // };
 
-}
+
 const messageController = new MessageController();
 export default messageController;

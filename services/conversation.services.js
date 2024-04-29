@@ -4,7 +4,7 @@ class ConversationService {
   async getCoversationByUserId(userId) {
     try {
 
-        const conversations = await Conversation.findById({
+        const conversations = await Conversation.find({
       members: userId,
     }).populate("members");
     return conversations;
@@ -18,7 +18,6 @@ class ConversationService {
   async createConversation(conversation) {
     try {
         const newConversation = await Conversation.create(conversation);
-        console.log(conversation)
         return newConversation;
     } catch (error) {
         return{
