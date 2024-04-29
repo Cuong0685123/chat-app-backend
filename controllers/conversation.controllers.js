@@ -16,7 +16,9 @@ class ConversationController {
   async getById(req, res) {
     try {
       const { userId } = req.params;
-      const conversation = await ConversationService.getCoversationByUserId(userId);
+      const conversation = await ConversationService.getCoversationByUserId(
+        userId
+      );
       return res.status(201).json({ data: conversation });
     } catch (err) {
       return res.status(404).json({ message: "cant not find" });
