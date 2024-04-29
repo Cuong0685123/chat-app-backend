@@ -2,6 +2,7 @@ import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import User from "../models/users.model.js";
 
+
 export const signup = async (req, res) => {
   try {
     const phoneNumberPattern = /^\d{10,11}$/;

@@ -1,28 +1,32 @@
-import Conversation from "../models/conversations.model.js";
-export const createConversation = async (req, res) => {
-  const { userIds } = req.body;
-  console.log({ userIds });
-  const conversation = await Conversation.create({
-    members: userIds,
-  });
-  return res.status(201).json({ data: conversation });
-};
+import ConversationService from "../services/conversation.services.js";
 
-export const getCoversationByUserId = async (req, res) => {
-  try {
-    const { userId } = req.params;
-    const conversations = await Conversation.find({ members: userId }).populate(
-      "members"
-    );
-    console.log(userId);
 
-    return res.status(200).json({ data: conversations });
-  } catch (error) {
-    return res
-      .status(500)
-      .json({
-        error: "Error retrieving conversations",
-        details: error.message,
-      });
+// export const createConversation = async (req, res) => {
+//     const { userIds } = req.body;
+//     console.log({ userIds });
+//     const conversation = await Conversation.create({
+//       members: userIds,
+//     });
+//     return res.status(201).json({ data: conversation });
+//   };
+
+
+class ConversationController {
+
+    // async create
+    
+
+
+  async getById(req, res) {
+    try {
+        const {userId} = req.params;
+      const conversation = await ConversationService.findById(userId);
+      return res.status(200).json({ data: conversation });
+    } catch (err) {
+        return res.status(404).json({message: "cant not find"});
+    }
   }
-};
+
+}
+const conversationController = new ConversationController();
+export default conversationController;

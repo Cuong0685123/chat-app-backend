@@ -4,6 +4,7 @@ import dotenv from 'dotenv';
 import authRouter from './routers/auth.routers.js';
 import conversationRouter from './routers/conversation.routers.js';
 import messageRouter from './routers/message.routers.js';
+import friendRouter from './routers/friend.routers.js';
 const PORT = process.env.PORT || 3000;
 
 dotenv.config();
@@ -15,6 +16,7 @@ app.use(express.json());
 app.use("/api/messages",messageRouter),
 app.use("/api/conversations", conversationRouter),
 app.use("/api/auth", authRouter),
+app.use("/api/friend", friendRouter),
 
 
 
