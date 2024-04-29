@@ -10,7 +10,7 @@ const upload = multer({ storage });
 
 router.post("/sendMessage",upload.array("files"), messageController.send);
 router.delete("/:messageId", messageController.revoked);
-// router.get("/:conversationId/conversation", getAllMessages);
+router.get("/:conversationId", messageController.getAll);
 
 
 

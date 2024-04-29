@@ -30,16 +30,23 @@ class MessageService {
 
   async revokeMessage(messageId) {
     try {
-      const message = await Message.findById(messageId);
+  const message = await Message.findByIdAndDelete(messageId);
       if (!message) {
         throw new Error("Message not found");
       }
-      await Message.findByIdAndDelete(messageId);
       return { success: true, message: "Message deleted successfully" };
     } catch (error) {
       throw new Error(error.message);
     }
   }
+  async  getAllMessages  (conversationId)  {
+    try {
+      const messages = await Message.find({ conversationId });
+      return messages;
+    } catch (error) {
+      throw new Error(error.message);
+    }
+  };
 }
 const messageService = new MessageService();
 export default messageService;
