@@ -40,6 +40,22 @@ class FriendServices {
       throw new Error(error.message);
     }
   }
+  async deleteInvitation(senderId, receiverId) {
+    try {
+      const deletedInvitation = await Friend.findOneAndDelete({
+        senderId,
+        receiverId,
+      });
+
+      if (!deletedInvitation) {
+        throw new Error("Invitation not found");
+      }
+
+      return deletedInvitation;
+    } catch (error) {
+      throw new Error(error.message);
+    }
+  }
 }
 
 const friendService = new FriendServices();

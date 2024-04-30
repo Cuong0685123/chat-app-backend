@@ -22,6 +22,19 @@ class FriendController {
       res.status(500).json({ error: "Internal server error" });
     }
   }
+
+
+async delete  (req, res) {
+  try {
+    const { senderId, receiverId } = req.params;
+    const deletedInvitation = await friendService.deleteInvitation(senderId, receiverId);
+    res.status(200).json({ message: 'Invitation deleted successfully', deletedInvitation });
+  } catch (error) {
+    console.error('Error deleting invitation:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+};
+
 }
 const friendController = new FriendController();
 export default friendController;
