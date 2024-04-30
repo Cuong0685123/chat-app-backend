@@ -1,25 +1,31 @@
-// import Friend from "../models/friends.model.js";
+import friendService from "../services/friend.services.js";
 
-// export const addFriend = async (req, res) =>{
-//     try {
-//         const {userId} = req.body
-//         const friend = await Friend.findById({
-//             userId
-//         })
-//         if(!friend){
-//             return res.status(400).json({
-//                 message: "friend not found"
-//             })
-//        }
-//         const newFriend = new Friend({
-//             userId
-//         })
-//         await newFriend.save()
-//        return res.status(201).json({message: done})
-//     } catch (error) {
-//         return res.status(500).json({
-//             message: error.message
-//         })
-        
-//     }
-// }
+class FriendController {
+  async add(req, res) {
+    try {
+      const { senderId, receiverId } = req.body;
+      const newFriendship = await friendService.addFriend(senderId, receiverId);
+
+      res.status(201).json(newFriendship);
+    } catch (error) {
+      console.error("Error adding friend:", error);
+      res
+        .status(500)
+        .json({ error: "Error adding friend", details: error.message });
+    }
+  };
+  async accept(req, res) {
+    try {
+      const { senderId, receiverId } = req.params;
+      const result = await friendService.acceptInvitation(senderId, receiverId);
+      res.status(200).json(result);
+    } catch (error) {
+      console.error('Error accepting invitation:', error);
+      res.status(500).json({ error: 'Internal server error' });
+    }
+  }
+  
+  
+}
+const friendController = new FriendController();
+export default friendController;

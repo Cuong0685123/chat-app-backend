@@ -1,12 +1,14 @@
-// import express from "express";
-// import { addFriend } from "../controllers/friend.controllers.js";
-
-
-// const router = express.Router();
-
-// router.get("/:userId", addFriend);
+import express from "express";
+import friendController from "../controllers/friend.controllers.js";
 
 
 
+const router = express.Router();
 
-// export default router;
+router.post("/", friendController.add);
+router.put('/:senderId/:receiverId', friendController.accept);
+
+
+
+
+export default router;
