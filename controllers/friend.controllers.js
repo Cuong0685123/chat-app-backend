@@ -9,23 +9,19 @@ class FriendController {
       res.status(201).json(newFriendship);
     } catch (error) {
       console.error("Error adding friend:", error);
-      res
-        .status(500)
-        .json({ error: "Error adding friend", details: error.message });
+      res.status(500).json({ error: "Error adding friend", details: error.message });
     }
-  };
+  }
   async accept(req, res) {
     try {
       const { senderId, receiverId } = req.params;
       const result = await friendService.acceptInvitation(senderId, receiverId);
       res.status(200).json(result);
     } catch (error) {
-      console.error('Error accepting invitation:', error);
-      res.status(500).json({ error: 'Internal server error' });
+      console.error("Error accepting invitation:", error);
+      res.status(500).json({ error: "Internal server error" });
     }
   }
-  
-  
 }
 const friendController = new FriendController();
 export default friendController;
