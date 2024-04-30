@@ -1,12 +1,13 @@
 import express from "express";
 import ConversationController from "../controllers/conversation.controllers.js";
+import authMiddleware from "../middeware/auth.authen.js";
 
 
 
 const router = express.Router();
 
- router.post("/", ConversationController.create);
-router.get("/:userId", ConversationController.getById);
+ router.post("/",authMiddleware, ConversationController.create);
+router.get("/:userId",authMiddleware, ConversationController.getById);
 
 
 

@@ -62,7 +62,9 @@ class AuthServices {
         throw new Error("Invalid phone number or password");
       }
       const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, {
-        expiresIn: "1h",
+        expiresIn: "7d",
+
+
       });
       return { message: "Login successful", token };
     } catch (error) {
