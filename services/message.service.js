@@ -6,7 +6,6 @@ class MessageService {
       const {
         conversationId,
         text,
-        images,
         files,
         recallAt,
         deleteAt,
@@ -15,7 +14,6 @@ class MessageService {
       const newMessage = new Message({
         conversationId,
         text,
-        images,
         files,
         recallAt,
         deleteAt,

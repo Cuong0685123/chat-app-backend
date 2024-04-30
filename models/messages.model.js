@@ -10,9 +10,6 @@ const messageSchema = new mongoose.Schema(
     text: {
       type: String,
     },
-    images: {
-      type: [String],
-    },
     files: {
       type: [String],
     },

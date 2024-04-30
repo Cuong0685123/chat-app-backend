@@ -6,7 +6,6 @@ class MessageController {
       const {
         conversationId,
         text,
-        images,
         files,
         recallAt,
         deleteAt,
@@ -16,7 +15,6 @@ class MessageController {
       const savedMessage = await MessageService.sendMessage({
         conversationId,
         text,
-        images: uploadedFilesUrls,
         files: uploadedFilesUrls,
         recallAt,
         deleteAt,
