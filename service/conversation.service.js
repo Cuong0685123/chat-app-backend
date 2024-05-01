@@ -1,4 +1,4 @@
-import Conversation from "../models/conversations.model.js";
+import Conversation from "../model/conversations.model.js";
 
 class ConversationService {
   async getCoversationByUserId(userId) {

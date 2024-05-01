@@ -1,4 +1,4 @@
-import MessageService from "../services/message.service.js";
+import MessageService from "../service/message.service.js";
 
 class MessageController {
   async send(req, res) {

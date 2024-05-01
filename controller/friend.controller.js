@@ -1,4 +1,4 @@
-import friendService from "../services/friend.services.js";
+import friendService from "../service/friend.service.js";
 
 class FriendController {
   async add(req, res) {

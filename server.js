@@ -1,10 +1,10 @@
 import express from 'express'; 
 import connectToMongoDB from "./db/connectToMongoDB.js";
 import dotenv from 'dotenv'; 
-import authRouter from './routers/auth.routers.js';
-import conversationRouter from './routers/conversation.routers.js';
-import messageRouter from './routers/message.routers.js';
-import friendRouter from './routers/friend.routers.js';
+import authRouter from './router/auth.router.js';
+import conversationRouter from './router/conversation.router.js';
+import messageRouter from './router/message.router.js';
+import friendRouter from './router/friend.router.js';
 const PORT = process.env.PORT || 3000;
 
 dotenv.config();

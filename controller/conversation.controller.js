@@ -1,4 +1,4 @@
-import ConversationService from "../services/conversation.services.js";
+import ConversationService from "../service/conversation.service.js";
 
 class ConversationController {
   async create(req, res) {

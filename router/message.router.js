@@ -1,7 +1,7 @@
 import express from "express";
 import {  storage } from '../s3.config.js'; 
 import multer from "multer";
-import messageController from "../controllers/message.controllers.js";
+import messageController from "../controller/message.controller.js";
 
 
 

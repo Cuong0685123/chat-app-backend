@@ -1,6 +1,6 @@
 import express from "express";
-import ConversationController from "../controllers/conversation.controllers.js";
-import authMiddleware from "../middeware/auth.authen.js";
+import ConversationController from "../controller/conversation.controller.js";
+import authMiddleware from "../middlewares/auth.middleware.js"
 
 
 

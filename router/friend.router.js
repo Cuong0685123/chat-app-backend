@@ -1,5 +1,5 @@
 import express from "express";
-import friendController from "../controllers/friend.controllers.js";
+import friendController from "../controller/friend.controller.js";
 
 
 
