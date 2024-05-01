@@ -12,7 +12,7 @@ class AuthController {
         avatar,
       });
 
-      res.status(201).json(result);
+      res.status(201).json({data:result});
     } catch (error) {
       console.error("Error registering user:", error);
       res
@@ -26,7 +26,7 @@ class AuthController {
       const { phoneNumber, password } = req.body;
       const result = await authService.login(phoneNumber, password);
 
-      res.status(200).json(result);
+      res.status(201).json({data:result});
     } catch (error) {
       console.error("Error logging in:", error);
       res

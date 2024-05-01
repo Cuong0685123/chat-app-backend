@@ -35,7 +35,7 @@ class MessageController {
     try {
       const { messageId } = req.params;
       const result = await MessageService.revokeMessage(messageId);
-      res.status(200).json(result);
+      res.status(201).json({data:result});
     } catch (error) {
       console.error("Error revoking message:", error);
       res.status(500).json({ error: "Internal server error" });
@@ -46,7 +46,7 @@ class MessageController {
     try {
       const { conversationId } = req.params;
       const messages = await MessageService.getAllMessages(conversationId);
-      res.status(200).json({ messages });
+      res.status(201).json({data: messages });
     } catch (error) {
       console.error("Error retrieving messages:", error);
       res

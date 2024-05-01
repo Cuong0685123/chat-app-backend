@@ -1,17 +1,14 @@
 import Conversation from "../model/conversations.model.js";
 
 class ConversationService {
-  async getCoversationByUserId(userId) {
+  async getConversationByUserId(userId) {
     try {
       const conversations = await Conversation.find({
         members: userId,
       }).populate("members");
       return conversations;
     } catch (error) {
-      return {
-        status: 404,
-        message: "cant not find",
-      };
+      throw new Error(error.message);
     }
   }
   async createConversation(conversation) {
@@ -19,10 +16,7 @@ class ConversationService {
       const newConversation = await Conversation.create(conversation);
       return newConversation;
     } catch (error) {
-      return {
-        status: 404,
-        message: "cant not creat",
-      };
+      throw new Error(error.message);
     }
   }
   async addMember(conversationId, memberId) {

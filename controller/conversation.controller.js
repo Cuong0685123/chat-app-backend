@@ -8,7 +8,7 @@ class ConversationController {
         members: userIds,
       });
       return res.status(201).json({ data: conversation });
-    } catch (err) {
+    } catch (error) {
       return res.status(404).json({ message: "cant not create" });
     }
   }
@@ -16,11 +16,11 @@ class ConversationController {
   async getById(req, res) {
     try {
       const { userId } = req.params;
-      const conversation = await ConversationService.getCoversationByUserId(
+      const conversation = await ConversationService.getConversationByUserId(
         userId
       );
       return res.status(201).json({ data: conversation });
-    } catch (err) {
+    } catch (error) {
       return res.status(404).json({ message: "cant not find" });
     }
   }
@@ -31,10 +31,11 @@ class ConversationController {
         conversationId,
         memberId
       );
-      res.status(200).json(conversation);
+
+     return res.status(201).json({data:conversation});
     } catch (error) {
       console.error("Error adding member to conversation:", error);
-      res.status(500).json({ error: "Internal server error" });
+    return res.status(500).json({ error: "Internal server error" });
     }
   }
   async delete(req, res) {
@@ -44,10 +45,10 @@ class ConversationController {
         conversationId,
         memberId
       );
-      res.status(200).json(conversation);
+      return res.status(201).json({data:conversation});
     } catch (error) {
       console.error("Error removing member from conversation:", error);
-      res.status(500).json({ error: "Internal server error" });
+    return res.status(500).json({ error: "Internal server error" });
     }
   }
 }
