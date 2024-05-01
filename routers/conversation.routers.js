@@ -9,6 +9,7 @@ const router = express.Router();
 router.post("/",authMiddleware, ConversationController.create);
 router.get("/:userId",authMiddleware, ConversationController.getById);
 router.post("/add-members", ConversationController.add);
+router.delete("/:conversationId/:memberId", ConversationController.delete);
 
 
 

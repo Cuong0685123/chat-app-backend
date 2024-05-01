@@ -41,6 +41,24 @@ class ConversationService {
       throw new Error(error.message);
     }
   }
+
+  async deleteMember(conversationId, memberId) {
+    try {
+      const conversation = await Conversation.findById(conversationId);
+      if (!conversation) {
+        throw new Error("Conversation not found");
+      }
+      const index = conversation.members.indexOf(memberId);
+      if (index === -1) {
+        throw new Error("Member not found in conversation");
+      }
+      conversation.members.splice(index, 1);
+      await conversation.save();
+      return conversation;
+    } catch (error) {
+      throw new Error(error.message);
+    }
+  }
 }
 
 const conversationService = new ConversationService();
