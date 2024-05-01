@@ -71,6 +71,8 @@ class AuthServices {
       throw new Error(error.message);
     }
   }
+
+  
 }
 
 const authServices = new AuthServices();

@@ -6,8 +6,9 @@ import authMiddleware from "../middeware/auth.authen.js";
 
 const router = express.Router();
 
- router.post("/",authMiddleware, ConversationController.create);
+router.post("/",authMiddleware, ConversationController.create);
 router.get("/:userId",authMiddleware, ConversationController.getById);
+router.post("/add-members", ConversationController.add);
 
 
 
