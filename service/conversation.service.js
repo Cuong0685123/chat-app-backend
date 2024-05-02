@@ -1,4 +1,5 @@
 import Conversation from "../model/conversations.model.js";
+import User from "../model/users.model.js";
 
 class ConversationService {
   async getConversationByUserId(userId) {
@@ -11,14 +12,37 @@ class ConversationService {
       throw new Error(error.message);
     }
   }
+  async validateUserIds(userIds) {
+    try {
+      if (!Array.isArray(userIds)) {
+        throw new Error("userIds must be an array");
+      }
+
+      for (const userId of userIds) {
+        if (typeof userId !== "string") {
+          throw new Error("userId must be a string");
+        }
+
+        const user = await User.findById(userId);
+        if (!user) {
+          throw new Error(`User with id ${userId} does not exist`);
+        }
+      }
+    } catch (error) {
+      throw new Error(error.message);
+    }
+  }
+
   async createConversation(conversation) {
     try {
+      await this.validateUserIds(conversation.members);
       const newConversation = await Conversation.create(conversation);
       return newConversation;
     } catch (error) {
       throw new Error(error.message);
     }
   }
+
   async addMember(conversationId, memberId) {
     try {
       const conversation = await Conversation.findById(conversationId);

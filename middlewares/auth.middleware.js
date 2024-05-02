@@ -4,7 +4,6 @@ import User from "../model/users.model.js";
 const authMiddleware = async (req, res, next) => {
   try {
     const [scheme, token] = req.headers.authorization.split(" ");
-    console.log(token);
 
     if (!token) {
       return res.status(401).json({ error: "Unauthorized: No token provided" });

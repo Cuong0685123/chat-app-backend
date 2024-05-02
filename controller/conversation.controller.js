@@ -9,7 +9,7 @@ class ConversationController {
       });
       return res.status(201).json({ data: conversation });
     } catch (error) {
-      return res.status(404).json({ message: "cant not create" });
+      return res.status(400).json({ error: error.message });
     }
   }
 
@@ -32,10 +32,10 @@ class ConversationController {
         memberId
       );
 
-     return res.status(201).json({data:conversation});
+      return res.status(201).json({ data: conversation });
     } catch (error) {
       console.error("Error adding member to conversation:", error);
-    return res.status(500).json({ error: "Internal server error" });
+      return res.status(500).json({ error: "Internal server error" });
     }
   }
   async delete(req, res) {
@@ -45,10 +45,10 @@ class ConversationController {
         conversationId,
         memberId
       );
-      return res.status(201).json({data:conversation});
+      return res.status(201).json({ data: conversation });
     } catch (error) {
       console.error("Error removing member from conversation:", error);
-    return res.status(500).json({ error: "Internal server error" });
+      return res.status(500).json({ error: "Internal server error" });
     }
   }
 }
