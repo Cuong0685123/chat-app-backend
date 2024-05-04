@@ -5,11 +5,10 @@ class ConversationService {
   async getConversationByUserId(userId) {
     try {
       const arrayCondition = [userId];
-      console.log(userId)
       const conversations = await Conversation.find({
         members: { $in: arrayCondition },
       }).populate("members");
-      conversations.messages = conversations?.messages?.slice(-1) ?? []
+      conversations.messages = conversations?.messages?.slice(-1) ?? [];
       return conversations;
     } catch (error) {
       throw new Error(error.message);
@@ -38,11 +37,34 @@ class ConversationService {
 
   async createConversation(conversation) {
     try {
-      await this.validateUserIds(conversation.members);
+      const invalidUserIds = await this.checkValidateUserIds(
+        conversation.members
+      );
+      if (invalidUserIds.length > 0) {
+        throw new Error(`UserId not in database`);
+      }
       const newConversation = await Conversation.create(conversation);
       return newConversation;
     } catch (error) {
       throw new Error(error.message);
+    }
+  }
+  async checkValidateUserIds(userIds) {
+    try {
+      const invalidUserIds = [];
+      for (const userId of userIds) {
+        if (typeof userId !== "string") {
+          throw new Error("userId must be a string");
+        }
+
+        const user = await User.findById(userId);
+        if (!user) {
+          invalidUserIds.push(userId);
+        }
+      }
+      return invalidUserIds;
+    } catch (error) {
+      throw new Error(`UserId not in database`);
     }
   }
 
