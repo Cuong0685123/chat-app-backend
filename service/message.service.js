@@ -1,4 +1,4 @@
-import Message from "../model/messages.model.js";
+import Message from "../model/message.model.js";
 
 class MessageService {
   async sendMessage(messageData) {
@@ -28,15 +28,20 @@ class MessageService {
 
   async revokeMessage(messageId) {
     try {
-  const message = await Message.findByIdAndDelete(messageId);
+      const message = await Message.findByIdAndUpdate(
+        messageId,
+        { revoked: true }, 
+        { new: true } 
+      );
       if (!message) {
         throw new Error("Message not found");
       }
-      return { success: true, message: "Message deleted successfully" };
+      return { success: true, message: "Message revoked successfully" };
     } catch (error) {
       throw new Error(error.message);
     }
   }
+  
   async  getAllMessages  (conversationId)  {
     try {
       const messages = await Message.find({ conversationId });

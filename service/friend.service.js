@@ -1,5 +1,5 @@
-import Friend from "../model/friends.model.js";
-import Conversation from "../model/conversations.model.js";
+import Friend from "../model/friend.model.js";
+import Conversation from "../model/conversation.model.js";
 
 class FriendServices {
   async addFriend(senderId, receiverId) {

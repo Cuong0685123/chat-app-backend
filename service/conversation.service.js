@@ -1,5 +1,5 @@
-import Conversation from "../model/conversations.model.js";
-import User from "../model/users.model.js";
+import Conversation from "../model/conversation.model.js";
+import User from "../model/user.model.js";
 
 class ConversationService {
   async getConversationByUserId(userId) {
@@ -7,7 +7,8 @@ class ConversationService {
       const arrayCondition = [userId];
       const conversations = await Conversation.find({
         members: { $in: arrayCondition },
-      }).populate("members");
+      }).populate("members")
+      .populate("messages");
       conversations.messages = conversations?.messages?.slice(-1) ?? [];
       return conversations;
     } catch (error) {
