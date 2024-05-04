@@ -10,9 +10,9 @@ const friendSchema = new mongoose.Schema({
     ref: "User",
   },
   status: {
-    type: String,
-    enum: ["pending", "accepted", "rejected"],
-    default: "pending",
+    type: Number,
+    enum: [0, 1], 
+    default: 0,
   },
 });
 const Friend = mongoose.model("Friend", friendSchema);

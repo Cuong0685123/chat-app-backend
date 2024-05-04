@@ -21,16 +21,20 @@ class FriendServices {
   }
   async acceptInvitation(senderId, receiverId) {
     try {
+      const existingConversation = await Conversation.findOne({
+        members: { $all: [senderId, receiverId] },
+      });
+      if (existingConversation) {
+        return existingConversation;
+      }
       const invitation = await Friend.findOneAndUpdate(
         { senderId, receiverId },
-        { status: "accepted" },
+        { status: "1" },
         { new: true }
       );
-
       if (!invitation) {
         throw new Error("Friendship not found");
       }
-
       const conversation = new Conversation({
         members: [senderId, receiverId],
       });
