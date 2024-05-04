@@ -4,9 +4,12 @@ import User from "../model/users.model.js";
 class ConversationService {
   async getConversationByUserId(userId) {
     try {
+      const arrayCondition = [userId];
+      console.log(userId)
       const conversations = await Conversation.find({
-        members: userId,
+        members: { $in: arrayCondition },
       }).populate("members");
+      conversations.messages = conversations?.messages?.slice(-1) ?? []
       return conversations;
     } catch (error) {
       throw new Error(error.message);
