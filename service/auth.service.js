@@ -6,7 +6,6 @@ class AuthServices {
   async signup(userData) {
     try {
       const { phoneNumber, password, displayName, avatar } = userData;
-
       const phoneNumberPattern = /^\d{10,11}$/;
       if (!phoneNumberPattern.test(phoneNumber)) {
         throw new Error("Invalid phone number");
@@ -14,38 +13,32 @@ class AuthServices {
       if (password.length < 6) {
         throw new Error("Password must be at least 6 characters long");
       }
-
       const existingUser = await User.findOne({ phoneNumber });
       if (existingUser) {
         throw new Error("Phone number already registered");
       }
 
       const hashedPassword = await bcrypt.hash(password, 10);
-
       const newUser = new User({
         phoneNumber,
         password: hashedPassword,
         displayName,
         avatar,
       });
-
       const savedUser = await newUser.save();
-
-      const accessToken = jwt.sign(
-        { userId: savedUser._id },
-        process.env.JWT_SECRET,
-        { expiresIn: "1h" }
-      );
-
-      const refreshToken = jwt.sign(
-        { userId: savedUser._id },
-        process.env.JWT_SECRET_REFRESH,
-        { expiresIn: "7d" }
-      );
-
+      const accessToken = generateAccessToken(savedUser);
+      const refreshToken = generateRefreshToken(savedUser);
       return { accessToken, refreshToken, user: savedUser };
     } catch (error) {
       throw new Error(error.message);
+    }
+    function generateAccessToken(user) {
+      return jwt.sign({ userId: user._id }, process.env.JWT_SECRET, {
+        expiresIn: "1h",
+      });
+    }
+    function generateRefreshToken(user) {
+      return jwt.sign({ userId: user._id }, process.env.JWT_SECRET_REFRESH);
     }
   }
   async login(phoneNumber, password) {
@@ -61,18 +54,28 @@ class AuthServices {
       if (!isPasswordValid) {
         throw new Error("Invalid phone number or password");
       }
-      const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, {
-        expiresIn: "7d",
 
+      const accessToken = generateAccessToken(user);
+      const refreshToken = generateRefreshToken(user);
 
-      });
-      return { message: "Login successful", token };
+      return { message: "Login successful", accessToken, refreshToken };
     } catch (error) {
       throw new Error(error.message);
     }
-  }
 
-  
+    function generateAccessToken(user) {
+      return jwt.sign({ userId: user._id }, process.env.JWT_SECRET, {
+        expiresIn: "6d",
+      });
+    }
+
+    function generateRefreshToken(user) {
+      return jwt.sign({ userId: user._id }, process.env.JWT_SECRET_REFRESH);
+    }
+  }
+  catch(error) {
+    throw new Error(error.message);
+  }
 }
 
 const authServices = new AuthServices();
