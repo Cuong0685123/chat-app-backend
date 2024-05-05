@@ -18,36 +18,41 @@ class ConversationService {
 
   async createConversation(conversation) {
     try {
-      const invalidUserIds = await this.checkValidateUserIds(
-        conversation.members
-      );
-      if (invalidUserIds.length > 0) {
-        throw new Error(`UserId not in database`);
-      }
-      const newConversation = await Conversation.create(conversation);
-      return newConversation;
+        const invalidUserIds = await this.checkValidateUserIds(conversation.members);
+        const allUserIdsValid = invalidUserIds.every(userId => !userId);
+        if (!allUserIdsValid) {
+            throw new Error("One or more user IDs are invalid");
+        }
+        const newConversation = await Conversation.create(conversation);
+        return newConversation;
     } catch (error) {
-      throw new Error(error.message);
+        throw new Error(`Failed to create conversation: ${error.message}`);
     }
-  }
+}
+
   async checkValidateUserIds(userIds) {
     try {
-      const invalidUserIds = [];
-      for (const userId of userIds) {
-        if (typeof userId !== "string") {
-          throw new Error("userId must be a string");
-        }
+        const invalidUserIds = [];
+        for (const userId of userIds) {
+            if (typeof userId !== "string") {
+                throw new Error("userId must be a string");
+            }
 
-        const user = await User.findById(userId);
-        if (!user) {
-          invalidUserIds.push(userId);
+            const user = await User.findById(userId);
+            if (!user) {
+                invalidUserIds.push(userId);
+            }
         }
-      }
-      return invalidUserIds;
+        const hasInvalidUserId = invalidUserIds.some(userId => !!userId);
+        if (hasInvalidUserId) {
+            throw new Error("One or more user IDs are invalid");
+        }
+        return invalidUserIds;
     } catch (error) {
-      throw new Error(`UserId not in database`);
+        throw new Error(`UserId not in database: ${error.message}`);
     }
-  }
+}
+
 
   async addMember(conversationId, memberId) {
     try {
