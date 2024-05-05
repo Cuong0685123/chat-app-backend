@@ -29,7 +29,7 @@ class FriendServices {
       }
       const invitation = await Friend.findOneAndUpdate(
         { senderId, receiverId },
-        { status: "1" },
+        { status: 1 },
         { new: true }
       );
       if (!invitation) {

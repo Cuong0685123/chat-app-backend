@@ -15,26 +15,6 @@ class ConversationService {
       throw new Error(error.message);
     }
   }
-  async validateUserIds(userIds) {
-    try {
-      if (!Array.isArray(userIds)) {
-        throw new Error("userIds must be an array");
-      }
-
-      for (const userId of userIds) {
-        if (typeof userId !== "string") {
-          throw new Error("userId must be a string");
-        }
-
-        const user = await User.findById(userId);
-        if (!user) {
-          throw new Error(`User with id ${userId} does not exist`);
-        }
-      }
-    } catch (error) {
-      throw new Error(error.message);
-    }
-  }
 
   async createConversation(conversation) {
     try {

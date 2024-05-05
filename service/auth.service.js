@@ -37,6 +37,7 @@ class AuthServices {
         expiresIn: "1h",
       });
     }
+
     function generateRefreshToken(user) {
       return jwt.sign({ userId: user._id }, process.env.JWT_SECRET_REFRESH);
     }
