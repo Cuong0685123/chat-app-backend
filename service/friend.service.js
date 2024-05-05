@@ -13,7 +13,12 @@ class FriendServices {
         receiverId,
       });
       const savedFriendship = await newFriendship.save();
-
+      await User.findByIdAndUpdate(senderId, {
+        $push: { friends: receiverId },
+      });
+      await User.findByIdAndUpdate(receiverId, {
+        $push: { friends: senderId },
+      });
       return savedFriendship;
     } catch (error) {
       throw new Error(error.message);
