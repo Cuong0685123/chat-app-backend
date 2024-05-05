@@ -3,6 +3,16 @@ import jwt from "jsonwebtoken";
 import User from "../model/user.model.js";
 
 class AuthServices {
+  async generateAccessToken(user) {
+    return jwt.sign({ userId: user._id }, process.env.JWT_SECRET, {
+      expiresIn: "7D",
+    });
+  }
+
+  async generateRefreshToken(user) {
+    return jwt.sign({ userId: user._id }, process.env.JWT_SECRET_REFRESH);
+  }
+
   async signup(userData) {
     try {
       const { phoneNumber, password, displayName, avatar } = userData;
@@ -26,22 +36,14 @@ class AuthServices {
         avatar,
       });
       const savedUser = await newUser.save();
-      const accessToken = generateAccessToken(savedUser);
-      const refreshToken = generateRefreshToken(savedUser);
+      const accessToken = await this.generateAccessToken(savedUser);
+      const refreshToken = await this.generateRefreshToken(savedUser);
       return { accessToken, refreshToken, user: savedUser };
     } catch (error) {
       throw new Error(error.message);
     }
-    function generateAccessToken(user) {
-      return jwt.sign({ userId: user._id }, process.env.JWT_SECRET, {
-        expiresIn: "1h",
-      });
-    }
-
-    function generateRefreshToken(user) {
-      return jwt.sign({ userId: user._id }, process.env.JWT_SECRET_REFRESH);
-    }
   }
+
   async login(phoneNumber, password) {
     try {
       if (!phoneNumber || !password) {
@@ -56,26 +58,12 @@ class AuthServices {
         throw new Error("Invalid phone number or password");
       }
 
-      const accessToken = generateAccessToken(user);
-      const refreshToken = generateRefreshToken(user);
-
+      const accessToken = await this.generateAccessToken(user);
+      const refreshToken = await this.generateRefreshToken(user);
       return { message: "Login successful", accessToken, refreshToken };
     } catch (error) {
       throw new Error(error.message);
     }
-
-    function generateAccessToken(user) {
-      return jwt.sign({ userId: user._id }, process.env.JWT_SECRET, {
-        expiresIn: "6d",
-      });
-    }
-
-    function generateRefreshToken(user) {
-      return jwt.sign({ userId: user._id }, process.env.JWT_SECRET_REFRESH);
-    }
-  }
-  catch(error) {
-    throw new Error(error.message);
   }
 }
 
