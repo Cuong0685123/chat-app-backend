@@ -1,4 +1,4 @@
-import {NoTokenProvidedError, TokenExpiredError} from "../errors/user.error.js";
+import {NoTokenProvidedError, TokenExpiredError} from "../error/user.error.js";
 import jwt from "jsonwebtoken";
 
 const authMiddleware = (req, res, next) => {

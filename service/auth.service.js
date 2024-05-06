@@ -7,21 +7,19 @@ import RefreshToken from"../model/refreshToken.model.js";
 import mongoose from "mongoose";
 import RevokedRefreshToken from "../model/revokedRefreshToken.model.js";
 
-
+const expiredTime = Number(process.env.EXPIRED_TIME || 10 * 60);
 class AuthServices {
-  async signup(userData) {
-    const { phoneNumber, password, displayName } = userData;
+  async signup(phoneNumber, password) {
     const hashedPassword = await bcrypt.hash(password, 12);
 
     const newUser = new User({
-      phoneNumber,
-      passwordHash: hashedPassword,
-      displayName,
-    
+      phoneNumber, 
+      password: hashedPassword
     });
 
     await newUser.save();
 }
+
 
 async login(phoneNumber, password) {
     const filter = {
@@ -35,7 +33,7 @@ async login(phoneNumber, password) {
         throw new UserNotFoundError(`User with phoneNumber: ${phoneNumber} not found!`);
     }
 
-    const doesPasswordMatch = await bcrypt.compare(password, foundUser.passwordHash);
+    const doesPasswordMatch = await bcrypt.compare(password, foundUser.password);
 
     if (!doesPasswordMatch) {
         throw new PasswordNotMatchingError('Invalid credentials, please re-enter your credentials.');

@@ -8,7 +8,7 @@ import {
     RefreshTokenNotFoundError,
     RefreshTokenExpiredError,
     RefreshTokenRevokedError, NoTokenProvidedError, TokenExpiredError, TokenInvalidError
-} from '../errors/user.error.js';
+} from '../error/user.error.js';
 
 const config = {
     environment: process.env.NODE_ENV || 'development',
