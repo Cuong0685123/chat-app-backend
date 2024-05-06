@@ -1,39 +1,58 @@
 import authService from "../service/auth.service.js";
-
+import { StatusCodes } from "http-status-codes";
 class AuthController {
-  async signup(req, res) {
+  async signup(req, res, next) {
     try {
       const { phoneNumber, password, displayName, avatar } = req.body;
 
-      const result = await authService.signup({
+       await authService.signup({
         phoneNumber,
         password,
         displayName,
         avatar,
       });
-
-      res.status(201).json({data:result});
-    } catch (error) {
-      console.error("Error registering user:", error);
-      res
-        .status(500)
-        .json({ error: "Error registering user", details: error.message });
-    }
+      res.status(StatusCodes.CREATED);
+      return res.end();
+  } catch (err) {
+      return next(err);
   }
+}
 
   async login(req, res) {
     try {
       const { phoneNumber, password } = req.body;
-      const result = await authService.login(phoneNumber, password);
+      const loginResponse = await authService.login(phoneNumber, password);
 
-      res.status(201).json({data:result});
-    } catch (error) {
-      console.error("Error logging in:", error);
-      res
-        .status(500)
-        .json({ error: "Error logging in", details: error.message });
-    }
+      return res.status(StatusCodes.OK).json(loginResponse);
+  } catch (err) {
+      return next(err);
   }
+}
+async regenerateAccessToken(req, res, next) {
+  try {
+      const { token } = req.body;
+
+      const regeneratedAccessTokenResponse = await authService.regenerateAccessToken(token);
+
+      return res.status(StatusCodes.OK).json(regeneratedAccessTokenResponse);
+  } catch (err) {
+      return next(err);
+  }
+}
+
+async revokeRefreshToken(req, res, next) {
+  try {
+      const { token } = req.body;
+
+      await authService.revokeRefreshToken(token);
+
+      res.status(StatusCodes.NO_CONTENT);
+
+      return res.end();
+  } catch (err) {
+      return next(err);
+  }
+}
 }
 const authController = new AuthController();
 export default authController;

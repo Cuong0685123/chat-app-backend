@@ -1,37 +1,28 @@
+import {NoTokenProvidedError, TokenExpiredError} from "../errors/user.error.js";
 import jwt from "jsonwebtoken";
-import User from "../model/user.model.js";
 
-const authMiddleware = async (req, res, next) => {
-  try {
-    const [scheme, token] = req.headers.authorization.split(" ");
-
-    if (!token) {
-      return res.status(401).json({ error: "Unauthorized: No token provided" });
+const authMiddleware = (req, res, next) => {
+    if(!req.headers.authorization) {
+        throw new NoTokenProvidedError('No token provided');
     }
 
-    switch (scheme) {
-      case "Bearer":
-        const decodedToken = jwt.verify(token, process.env.JWT_SECRET);
-        const userId = decodedToken.userId;
-        req.userId = userId;
+    const [_, token] = req.headers.authorization.split('Bearer ');
 
-        const user = await User.findById(userId);
+    if (!token)
+        throw NoTokenProvidedError('No token provided');
 
-        if (!user) {
-          return res.status(404).json({ error: "User not found" });
+    try {
+        const claims = jwt.verify(token, process.env.SALT);
+        const {sub} = claims;
+        req.userId = sub;
+
+        next();
+    } catch (error) {
+        if(error.name === 'TokenExpiredError') {
+            throw new TokenExpiredError('Token expired')
         }
-        req.user = user;
-        break;
-      default:
-        return res
-          .status(403)
-          .json({ error: "Unsupported authorization scheme" });
+        throw new NoTokenProvidedError('Token invalid');
     }
-
-    next();
-  } catch (error) {
-    return res.status(401).json({ error: "Unauthorized: Invalid token" });
-  }
-};
+}
 
 export default authMiddleware;

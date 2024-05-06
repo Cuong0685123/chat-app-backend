@@ -1,70 +1,171 @@
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import User from "../model/user.model.js";
+import { UserNotFoundError, PasswordNotMatchingError,RefreshTokenRevokedError, RefreshTokenNotFoundError } from "../error/user.error.js";
+import { randomUUID } from "crypto";
+import RefreshToken from"../model/refreshToken.model.js";
+import mongoose from "mongoose";
+import RevokedRefreshToken from "../model/revokedRefreshToken.model.js";
+
 
 class AuthServices {
-  async generateAccessToken(user) {
-    return jwt.sign({ userId: user._id }, process.env.JWT_SECRET, {
-      expiresIn: "7D",
-    });
-  }
-
-  async generateRefreshToken(user) {
-    return jwt.sign({ userId: user._id }, process.env.JWT_SECRET_REFRESH);
-  }
-
   async signup(userData) {
-    try {
-      const { phoneNumber, password, displayName, avatar } = userData;
-      const phoneNumberPattern = /^\d{10,11}$/;
-      if (!phoneNumberPattern.test(phoneNumber)) {
-        throw new Error("Invalid phone number");
-      }
-      if (password.length < 6) {
-        throw new Error("Password must be at least 6 characters long");
-      }
-      const existingUser = await User.findOne({ phoneNumber });
-      if (existingUser) {
-        throw new Error("Phone number already registered");
-      }
+    const { phoneNumber, password, displayName } = userData;
+    const hashedPassword = await bcrypt.hash(password, 12);
 
-      const hashedPassword = await bcrypt.hash(password, 10);
-      const newUser = new User({
-        phoneNumber,
-        password: hashedPassword,
-        displayName,
-        avatar,
-      });
-      const savedUser = await newUser.save();
-      const accessToken = await this.generateAccessToken(savedUser);
-      const refreshToken = await this.generateRefreshToken(savedUser);
-      return { accessToken, refreshToken, user: savedUser };
-    } catch (error) {
-      throw new Error(error.message);
+    const newUser = new User({
+      phoneNumber,
+      passwordHash: hashedPassword,
+      displayName,
+    
+    });
+
+    await newUser.save();
+}
+
+async login(phoneNumber, password) {
+    const filter = {
+        phoneNumber
+    };
+
+
+    const foundUser = await User.findOne(filter).exec();
+
+    if (foundUser === null) {
+        throw new UserNotFoundError(`User with phoneNumber: ${phoneNumber} not found!`);
     }
-  }
 
-  async login(phoneNumber, password) {
-    try {
-      if (!phoneNumber || !password) {
-        throw new Error("Phone number and password are required");
-      }
-      const user = await User.findOne({ phoneNumber });
-      if (!user) {
-        throw new Error("User not found");
-      }
-      const isPasswordValid = await bcrypt.compare(password, user.password);
-      if (!isPasswordValid) {
-        throw new Error("Invalid phone number or password");
-      }
+    const doesPasswordMatch = await bcrypt.compare(password, foundUser.passwordHash);
 
-      const accessToken = await this.generateAccessToken(user);
-      const refreshToken = await this.generateRefreshToken(user);
-      return { message: "Login successful", accessToken, refreshToken };
-    } catch (error) {
-      throw new Error(error.message);
+    if (!doesPasswordMatch) {
+        throw new PasswordNotMatchingError('Invalid credentials, please re-enter your credentials.');
     }
-  }
+
+    const accessTokenClaims = {
+        sub: foundUser._id.toString(), jti: randomUUID(), role: foundUser.role, phoneNumber: foundUser.phoneNumber
+    };
+
+
+    const accessToken = jwt.sign(accessTokenClaims, process.env.JWT_SECRET, {
+        expiresIn: expiredTime
+    });
+
+    const refreshTokenClaims = {
+        sub: foundUser._id.toString(), jti: randomUUID()
+    };
+
+    const refreshToken = jwt.sign(refreshTokenClaims, process.env.JWT_SECRET_REFRESH, {
+        expiresIn: expiredTime * 5
+    });
+
+    // Persist the refresh token
+    const foundRefreshToken = await RefreshToken.findOne({
+        userId: foundUser._id
+    }).exec();
+
+    if (foundRefreshToken === null) {
+        const newRefreshToken = new RefreshToken({
+            userId: foundUser._id, token: refreshToken
+        });
+
+        await newRefreshToken.save();
+    } else {
+        const filter = {
+            userId: foundUser._id
+        };
+
+        const payload = {
+            token: refreshToken
+        };
+
+        await RefreshToken.updateOne(filter, payload).exec();
+    }
+
+    return {
+        access_token: accessToken, refresh_token: refreshToken, expires_in: expiredTime
+    };
+}
+
+async regenerateAccessToken(refreshToken) {
+    const {payload: refreshTokenClaims} = jwt.decode(refreshToken, {complete: true});
+
+    const userId = new mongoose.Types.ObjectId(refreshTokenClaims.sub);
+
+    /*
+        * Check if refresh token is revoked or not
+        * If revoked, return HTTP 401 Unauthorized.
+    */
+    const revokedRefreshedToken = await RevokedRefreshToken.findOne({
+        userId
+    }).exec();
+
+    if (revokedRefreshedToken) {
+        throw new RefreshTokenRevokedError('Refresh token is already revoked!');
+    }
+
+    /*
+        * Check if refresh token is present or not
+        * If not present, return HTTP 401 Unauthorized.
+    */
+    const foundRefreshToken = await RefreshToken.findOne({
+        userId
+    }).exec();
+
+    if (foundRefreshToken === null) {
+        throw new RefreshTokenNotFoundError('Invalid refresh token');
+    }
+
+    /*
+        * Check if user is present or not
+        * If not present, return HTTP 404 Not found.
+    */
+    const filter = {
+        _id: userId
+    };
+
+    const foundUser = await User.findOne(filter).exec();
+
+    if (foundUser === null) {
+        throw new UserNotFoundError(`User not found!`);
+    }
+
+    const accessTokenClaims = {
+        sub: foundUser._id.toString(), jti: randomUUID(), role: foundUser.role, username: foundUser.username
+    };
+
+
+    const accessToken = jwt.sign(accessTokenClaims, process.env.JWT_SECRET, {
+        expiresIn: expiredTime
+    });
+
+    return {
+        access_token: accessToken, refresh_token: refreshToken, expires_in: expiredTime
+    };
+}
+
+async revokeRefreshToken(refreshToken) {
+    const {payload: refreshTokenClaims} = jwt.decode(refreshToken, {complete: true});
+
+    const userId = new mongoose.Types.ObjectId(refreshTokenClaims.sub);
+
+    // Persist the refresh token
+    const foundRevokedRefreshToken = await RevokedRefreshToken.findOne({
+        userId
+    }).exec();
+
+
+    if (foundRevokedRefreshToken === null) {
+        const newRefreshToken = new RevokedRefreshToken({
+            userId, token: refreshToken
+        });
+
+        await newRefreshToken.save();
+    } else {
+        foundRevokedRefreshToken.token = refreshToken;
+
+        await foundRevokedRefreshToken.save();
+    }
+}
 }
 
 const authServices = new AuthServices();
