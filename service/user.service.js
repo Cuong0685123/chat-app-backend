@@ -1,5 +1,5 @@
-import User from "../models/user.model.js";
-import {UserNotFoundError} from "../errors/user.error.js";
+import User from "../model/user.model.js";
+import {UserNotFoundError} from "../error/user.error.js";
 import mongoose from "mongoose";
 
 class UserService {

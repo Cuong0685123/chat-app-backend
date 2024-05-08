@@ -4,12 +4,9 @@ class AuthController {
   async signup(req, res, next) {
     try {
         const {phoneNumber, password} = req.body;
-
-        await authService.signup(phoneNumber, password);
-
-        res.status(StatusCodes.CREATED);
-
-        return res.end();
+        const newUser = await authService.signup(
+          phoneNumber, password);
+        res.status(StatusCodes.CREATED).json(newUser);
     } catch (err) {
         return next(err);
     }

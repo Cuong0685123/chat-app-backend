@@ -9,16 +9,25 @@ import RevokedRefreshToken from "../model/revokedRefreshToken.model.js";
 
 const expiredTime = Number(process.env.EXPIRED_TIME || 10 * 60);
 class AuthServices {
-  async signup(phoneNumber, password) {
-    const hashedPassword = await bcrypt.hash(password, 12);
+    async signup(phoneNumber, password) {
+        const existingUser = await User.findOne({ phoneNumber });
 
-    const newUser = new User({
-      phoneNumber, 
-      password: hashedPassword
-    });
+        if (existingUser) {
+            throw new Error('Phone number has already been used');
+        }
 
-    await newUser.save();
-}
+
+        const hashedPassword = await bcrypt.hash(password, 12);
+
+        const newUser = new User({
+            phoneNumber,
+            password: hashedPassword
+        });
+
+        await newUser.save();
+        return newUser;
+    }
+
 
 
 async login(phoneNumber, password) {
