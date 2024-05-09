@@ -62,7 +62,7 @@ async login(phoneNumber, password) {
     };
 
     const refreshToken = jwt.sign(refreshTokenClaims, process.env.JWT_SECRET_REFRESH, {
-        expiresIn: expiredTime * 5
+        expiresIn: expiredTime * 1000
     });
 
     // Persist the refresh token
