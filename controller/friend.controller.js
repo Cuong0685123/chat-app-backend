@@ -1,5 +1,6 @@
 import friendService from "../service/friend.service.js";
 
+
 class FriendController {
   async add(req, res) {
     try {
