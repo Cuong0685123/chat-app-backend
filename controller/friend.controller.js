@@ -6,7 +6,6 @@ class FriendController {
     try {
       const { senderId, receiverId } = req.body;
       const newFriendship = await friendService.addFriend(senderId, receiverId);
-
       res.status(201).json({data:newFriendship});
     } catch (error) {
       console.error("Error adding friend:", error);
@@ -16,7 +15,7 @@ class FriendController {
   async accept(req, res) {
     try {
       const { senderId, receiverId } = req.params;
-      const result = await friendService.acceptInvitation(senderId, receiverId);
+      const result = await friendService.acceptInvitation( senderId, receiverId );
       res.status(201).json({data:result});
     } catch (error) {
       console.error("Error accepting invitation:", error);

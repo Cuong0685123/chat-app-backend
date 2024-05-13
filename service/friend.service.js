@@ -1,5 +1,6 @@
 import Friend from "../model/friend.model.js";
 import Conversation from "../model/conversation.model.js";
+import User from "../model/user.model.js";
 
 class FriendServices {
   async addFriend(senderId, receiverId) {
@@ -13,18 +14,15 @@ class FriendServices {
         receiverId,
       });
       const savedFriendship = await newFriendship.save();
-      await User.findByIdAndUpdate(senderId, {
-        $push: { friends: receiverId },
-      });
-      await User.findByIdAndUpdate(receiverId, {
-        $push: { friends: senderId },
+      await User.findByIdAndUpdate(senderId,receiverId, {
+        $push: { friends: senderId, receiverId }
       });
       return savedFriendship;
     } catch (error) {
       throw new Error(error.message);
     }
   }
-  async acceptInvitation(senderId, receiverId) {
+  async acceptInvitation(senderId, receiverId ) {
     try {
       const existingConversation = await Conversation.findOne({
         members: { $all: [senderId, receiverId] },
