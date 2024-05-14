@@ -47,11 +47,10 @@ class FriendServices {
       throw new Error(error.message);
     }
   }
-  async deleteInvitation(senderId, receiverId) {
+  async deleteInvitation(friendId) {
     try {
       const deletedInvitation = await Friend.findOneAndDelete({
-        senderId,
-        receiverId,
+        _id: friendId,
       });
 
       if (!deletedInvitation) {

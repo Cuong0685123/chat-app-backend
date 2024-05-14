@@ -8,8 +8,8 @@ import messageController from "../controller/message.controller.js";
 const router = express.Router();
 const upload = multer({ storage });
 
-router.post("/sendMessage",upload.array("files"), messageController.send);
-router.delete("/:messageId", messageController.revoked);
+router.post("/",upload.array("files"), messageController.send);
+router.put("/:messageId", messageController.revoked);
 router.get("/:conversationId", messageController.getAll);
 
 

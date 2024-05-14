@@ -14,7 +14,7 @@ class FriendController {
   }
   async accept(req, res) {
     try {
-      const { senderId, receiverId } = req.params;
+      const { senderId, receiverId } = req.body;
       const result = await friendService.acceptInvitation( senderId, receiverId );
       res.status(201).json({data:result});
     } catch (error) {
@@ -26,8 +26,8 @@ class FriendController {
 
 async delete  (req, res) {
   try {
-    const { senderId, receiverId } = req.params;
-    const deletedInvitation = await friendService.deleteInvitation(senderId, receiverId);
+    const { friendId } = req.params;
+    const deletedInvitation = await friendService.deleteInvitation(friendId);
     res.status(201).json({ message: 'Invitation deleted successfully', deletedInvitation });
   } catch (error) {
     console.error('Error deleting invitation:', error);
