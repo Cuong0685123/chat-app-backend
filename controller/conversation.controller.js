@@ -39,7 +39,7 @@ class ConversationController {
   }
   async delete(req, res) {
     try {
-      const { conversationId, memberId } = req.params;
+      const { conversationId, memberId } = req.body;
       const conversation = await ConversationService.deleteMember(
         conversationId,
         memberId

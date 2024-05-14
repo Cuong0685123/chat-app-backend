@@ -1,13 +1,14 @@
 import express from "express";
 import friendController from "../controller/friend.controller.js";
+import authMiddleware from "../middlewares/auth.middleware.js";
 
 
 
 const router = express.Router();
 
-router.post('/', friendController.add);
-router.put('/', friendController.accept);
-router.delete('/:friendId', friendController.delete);
+router.post('/',authMiddleware, friendController.add);
+router.put('/',authMiddleware, friendController.accept);
+router.delete('/:friendId',authMiddleware, friendController.delete);
 
 
 
