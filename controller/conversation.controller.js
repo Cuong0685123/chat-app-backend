@@ -23,10 +23,11 @@ class ConversationController {
       return res.status(404).json({ message: "cant not find" });
     }
   }
-  async add(req, res) {
+  async update(req, res) {
     try {
-      const { conversationId, memberId } = req.body;
-      const conversation = await ConversationService.addMember(
+      const{conversationId} = req.params;
+      const{memberId} = req.body;
+      const conversation = await ConversationService.updateConversation(
         conversationId,
         memberId
       );

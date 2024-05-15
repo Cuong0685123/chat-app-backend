@@ -1,5 +1,6 @@
 import Conversation from "../model/conversation.model.js";
 import User from "../model/user.model.js";
+import mongoose from "mongoose";
 
 class ConversationService {
   async getConversationByUserId(userId) {
@@ -7,8 +8,9 @@ class ConversationService {
       const arrayCondition = [userId];
       const conversations = await Conversation.find({
         members: { $in: arrayCondition },
-      }).populate("members")
-      .populate("messages");
+      })
+        .populate("members")
+        .populate("messages");
       conversations.messages = conversations?.messages?.slice(-1) ?? [];
       return conversations;
     } catch (error) {
@@ -18,53 +20,69 @@ class ConversationService {
 
   async createConversation(conversation) {
     try {
-        const invalidUserIds = await this.checkValidateUserIds(conversation.members);
-        const allUserIdsValid = invalidUserIds.every(userId => !userId);
-        if (!allUserIdsValid) {
-            throw new Error("One or more user IDs are invalid");
-        }
-        const newConversation = await Conversation.create(conversation);
-        return newConversation;
+      const invalidUserIds = await this.checkValidateUserIds(
+        conversation.members
+      );
+      const allUserIdsValid = invalidUserIds.every((userId) => !userId);
+      if (!allUserIdsValid) {
+        throw new Error("One or more user IDs are invalid");
+      }
+      const newConversation = await Conversation.create(conversation);
+      return newConversation;
     } catch (error) {
-        throw new Error(`Failed to create conversation: ${error.message}`);
+      throw new Error(`Failed to create conversation: ${error.message}`);
     }
-}
+  }
 
   async checkValidateUserIds(userIds) {
     try {
-        const invalidUserIds = [];
-        for (const userId of userIds) {
-            if (typeof userId !== "string") {
-                throw new Error("userId must be a string");
-            }
+      const invalidUserIds = [];
+      for (const userId of userIds) {
+        if (typeof userId !== "string") {
+          throw new Error("userId must be a string");
+        }
 
-            const user = await User.findById(userId);
-            if (!user) {
-                invalidUserIds.push(userId);
-            }
+        const user = await User.findById(userId);
+        if (!user) {
+          invalidUserIds.push(userId);
         }
-        const hasInvalidUserId = invalidUserIds.some(userId => !!userId);
-        if (hasInvalidUserId) {
-            throw new Error("One or more user IDs are invalid");
-        }
-        return invalidUserIds;
+      }
+      const hasInvalidUserId = invalidUserIds.some((userId) => !!userId);
+      if (hasInvalidUserId) {
+        throw new Error("One or more user IDs are invalid");
+      }
+      return invalidUserIds;
     } catch (error) {
-        throw new Error(`UserId not in database: ${error.message}`);
+      throw new Error(`UserId not in database: ${error.message}`);
     }
-}
+  }
 
-
-  async addMember(conversationId, memberId) {
+  async updateConversation(conversationId, memberId) {
     try {
+      if (!Array.isArray(memberId)) {
+        throw new Error("memberIds");
+      }
+
+      const objectIdMembers = memberId.map((id) => {
+        if (!mongoose.Types.ObjectId.isValid(id)) {
+          throw new Error(`Invalid ObjectId: ${id}`);
+        }
+        return new mongoose.Types.ObjectId(id);
+      });
+
       const conversation = await Conversation.findById(conversationId);
       if (!conversation) {
         throw new Error("Conversation not found");
       }
-      if (conversation.members.includes(memberId)) {
-        throw new Error("Member already exists in conversation");
-      }
-      conversation.members.push(memberId);
+
+      conversation.members.push(...objectIdMembers);
+
+      conversation.members = [
+        ...new Set(conversation.members.map((member) => member.toString())),
+      ].map((id) => new mongoose.Types.ObjectId(id));
+
       await conversation.save();
+
       return conversation;
     } catch (error) {
       throw new Error(error.message);

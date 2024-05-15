@@ -14,15 +14,15 @@ class FriendServices {
         receiverId,
       });
       const savedFriendship = await newFriendship.save();
-      await User.findByIdAndUpdate(senderId,receiverId, {
-        $push: { friends: senderId, receiverId }
+      await User.findByIdAndUpdate(senderId, receiverId, {
+        $push: { friends: senderId, receiverId },
       });
       return savedFriendship;
     } catch (error) {
       throw new Error(error.message);
     }
   }
-  async acceptInvitation(senderId, receiverId ) {
+  async acceptInvitation(senderId, receiverId) {
     try {
       const existingConversation = await Conversation.findOne({
         members: { $all: [senderId, receiverId] },
@@ -30,6 +30,7 @@ class FriendServices {
       if (existingConversation) {
         return existingConversation;
       }
+
       const invitation = await Friend.findOneAndUpdate(
         { senderId, receiverId },
         { status: 1 },
@@ -38,15 +39,20 @@ class FriendServices {
       if (!invitation) {
         throw new Error("Friendship not found");
       }
+
       const conversation = new Conversation({
         members: [senderId, receiverId],
       });
       const newConversation = await conversation.save();
+
+      await Friend.deleteOne({ senderId, receiverId });
+
       return newConversation;
     } catch (error) {
       throw new Error(error.message);
     }
   }
+
   async deleteInvitation(friendId) {
     try {
       const deletedInvitation = await Friend.findOneAndDelete({

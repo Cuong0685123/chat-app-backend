@@ -6,7 +6,7 @@ const router = express.Router();
 
 router.post("/", authMiddleware,ConversationController.create);
 router.get("/",authMiddleware, ConversationController.getById);
-router.post("/add-members",authMiddleware, ConversationController.add);
+router.put("/:conversationId",authMiddleware, ConversationController.update);
 router.delete("/",authMiddleware, ConversationController.delete);
 
 export default router;

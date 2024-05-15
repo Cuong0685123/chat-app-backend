@@ -7,7 +7,7 @@ const userSchema = new mongoose.Schema(
       ref: "User",
     }],
     phoneNumber: {
-      type: [String],
+      type: String,
       required: true,
     },
     password: {

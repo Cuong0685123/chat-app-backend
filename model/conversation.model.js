@@ -12,6 +12,7 @@ const conversationSchema = new mongoose.Schema(
     }],
     avatar: {
       type: String,
+      default: null,
     },
     admin: {
       type: mongoose.Schema.Types.ObjectId,
@@ -21,6 +22,7 @@ const conversationSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
     }],
+  
   },
   { timestamps: true }
 );
