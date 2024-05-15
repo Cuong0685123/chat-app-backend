@@ -45,11 +45,26 @@ class MessageService {
   async  getAllMessages  (conversationId)  {
     try {
       const messages = await Message.find({ conversationId });
-      return messages;
+      const formattedMessages = messages.map(message => {
+        if (message.revoked) {
+          const { _id, ...rest } = message.toObject();
+          return {
+            _id,
+            revoked: true,
+            ...rest,
+            content: null,
+            text:null,
+            files: null
+          };
+        } else { 
+          return message.toObject();
+        }
+      });
+      return formattedMessages;
     } catch (error) {
       throw new Error(error.message);
     }
-  };
+  }
 }
 const messageService = new MessageService();
 export default messageService;
