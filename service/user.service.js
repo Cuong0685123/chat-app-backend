@@ -17,27 +17,30 @@ class UserService {
 
     return userFounded;
   }
-  async updateUser(userId, userData) {
-    try {
-      const updateFields = {};
-      for (const [key, value] of Object.entries(userData)) {
-        if (User.schema.obj.hasOwnProperty(key)) {
-          updateFields[key] = value;
+
+    async updateUser(userId, userFields) {
+        try {
+          const updateFields = {};
+          if (userFields.displayName) {
+            updateFields.displayName = userFields.displayName;
+          }
+          if (userFields.avatar) {
+            updateFields.avatar = userFields.avatar;
+          }
+          const updatedUser = await User.findByIdAndUpdate(userId, updateFields, {
+            new: true,
+          });
+    
+          if (!updatedUser) {
+            throw new Error("User not found");
+          }
+    
+          return updatedUser;
+        } catch (error) {
+          throw new Error(error.message);
         }
       }
-      const updatedUser = await User.findByIdAndUpdate(userId, updateFields, {
-        new: true,
-      });
-      if (!updatedUser) {
-        throw new Error("User not found");
-      }
-
-      return updatedUser;
-    } catch (error) {
-      throw new Error(error.message);
-    }
-  }
-}
+}  
 
 const userService = new UserService();
 export default userService;

@@ -10,7 +10,7 @@ class ConversationService {
         members: { $in: arrayCondition },
       })
         .populate("members")
-        .populate("messages");
+        .populate("lastMessage");
       conversations.messages = conversations?.messages?.slice(-1) ?? [];
       return conversations;
     } catch (error) {

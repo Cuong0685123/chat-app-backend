@@ -8,7 +8,6 @@ const conversationSchema = new mongoose.Schema(
     messages: [{
       type: mongoose.Schema.Types.ObjectId,
       ref: "Message",
-      default: [],
     }],
     avatar: {
       type: String,
@@ -22,6 +21,10 @@ const conversationSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
     }],
+    lastMessage:{
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Message",
+    }
   
   },
   { timestamps: true }
