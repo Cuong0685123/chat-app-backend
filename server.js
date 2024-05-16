@@ -8,11 +8,14 @@ import friendRouter from './router/friend.router.js';
 import userRouter from './router/user.router.js';
 import cors from 'cors'
 import { RouteNotFoundErrorMiddleware, UnhandleErrorMiddleware } from './middlewares/index.js';
+import { app, server } from "./socket/socket.js";
 const PORT = process.env.PORT || 3000;
+
+// const app = express();
 
 dotenv.config();
 await connectToMongoDB();
-const app = express();
+
 app.use(express.json());
 app.use(cors());
 app.use("/api/messages",messageRouter),
@@ -25,7 +28,6 @@ app.use(UnhandleErrorMiddleware);
 app.use(RouteNotFoundErrorMiddleware);
 
 
-
-app.listen(PORT, () => {
+ server.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
 });
