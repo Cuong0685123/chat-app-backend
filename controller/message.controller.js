@@ -45,16 +45,17 @@ class MessageController {
   async getAll(req, res) {
     try {
       const { conversationId } = req.params;
-      const messages = await MessageService.getAllMessages(conversationId);
-      res.status(201).json({data: messages });
+      const { page = 1, limit = 5 } = req.query;
+
+      const result = await MessageService.getAllMessages(conversationId, parseInt(page), parseInt(limit));
+      res.status(200).json({ data: result });
     } catch (error) {
       console.error("Error retrieving messages:", error);
-      res
-        .status(500)
-        .json({ error: "Error retrieving messages", details: error.message });
+      res.status(500).json({ error: "Internal server error" });
     }
   }
 }
+
 
 const messageController = new MessageController();
 export default messageController;

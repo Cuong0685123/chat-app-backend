@@ -11,7 +11,7 @@ const upload = multer({ storage });
 
 router.post("/",upload.array("files"), messageController.send);
 router.put("/:messageId/revoked", authMiddleware, messageController.revoked);
-router.get("/:conversationId", messageController.getAll);
+router.get("/:conversationId/messages", messageController.getAll);
 
 
 

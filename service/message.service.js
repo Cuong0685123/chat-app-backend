@@ -3,14 +3,8 @@ import Message from "../model/message.model.js";
 class MessageService {
   async sendMessage(messageData) {
     try {
-      const {
-        conversationId,
-        text,
-        files,
-        recallAt,
-        deleteAt,
-        senderId,
-      } = messageData;
+      const { conversationId, text, files, recallAt, deleteAt, senderId } =
+        messageData;
       const newMessage = new Message({
         conversationId,
         text,
@@ -30,8 +24,8 @@ class MessageService {
     try {
       const message = await Message.findByIdAndUpdate(
         messageId,
-        { revoked: true }, 
-        { new: true } 
+        { revoked: true },
+        { new: true }
       );
       if (!message) {
         throw new Error("Message not found");
@@ -41,10 +35,15 @@ class MessageService {
       throw new Error(error.message);
     }
   }
-  
-  async  getAllMessages  (conversationId)  {
+
+  async getAllMessages(conversationId, page = 1, limit = 5) {
     try {
-      const messages = await Message.find({ conversationId });
+      const skip = (page - 1) * limit; 
+  
+      const messages = await Message.find({ conversationId })
+        .skip(skip)
+        .limit(limit);
+  
       const formattedMessages = messages.map(message => {
         if (message.revoked) {
           const { _id, ...rest } = message.toObject();
@@ -52,15 +51,22 @@ class MessageService {
             _id,
             revoked: true,
             ...rest,
-            content: null,
-            text:null,
+            text: null,
             files: null
           };
-        } else { 
+        } else {
           return message.toObject();
         }
       });
-      return formattedMessages;
+      const totalMessages = await Message.countDocuments({ conversationId });
+      const totalPages = Math.ceil(totalMessages / limit);
+  
+      return {
+        page,
+        totalPages,
+        limit,
+        messages: formattedMessages
+      };
     } catch (error) {
       throw new Error(error.message);
     }
