@@ -11,7 +11,7 @@ import { RouteNotFoundErrorMiddleware, UnhandleErrorMiddleware } from './middlew
 import { app, server } from "./socket/socket.js";
 const PORT = process.env.PORT || 3000;
 
-// const app = express();
+
 
 dotenv.config();
 await connectToMongoDB();

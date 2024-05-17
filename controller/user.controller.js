@@ -31,7 +31,20 @@ class UserController {
       res.status(500).json({ error: "Internal server error" });
     }
   }
-}
+  async findUserByPhoneNumber(req, res) {
+    try {
+      const { phoneNumber } = req.params;
+      const user = await userService.findUserByPhoneNumber(phoneNumber);
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
+      res.status(200).json({ data: user });
+    } catch (error) {
+      console.error("Error finding user:", error);
+      res.status(500).json({ error: "Internal server error" });
+    }
+  }}
+
 
 const userController = new UserController();
 export default userController;

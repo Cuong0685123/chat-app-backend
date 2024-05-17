@@ -40,15 +40,25 @@ class ConversationController {
   }
   async delete(req, res) {
     try {
-      const { conversationId, memberId } = req.body;
+      const { conversationId, memberIds } = req.body;
       const conversation = await ConversationService.deleteMember(
         conversationId,
-        memberId
+        memberIds
       );
       return res.status(201).json({ data: conversation });
     } catch (error) {
       console.error("Error removing member from conversation:", error);
       return res.status(500).json({ error: "Internal server error" });
+    }
+  }
+  async findFilesInConversation(req, res) {
+    try {
+      const { conversationId } = req.params;
+      const files = await ConversationService.findFilesInConversation(conversationId);
+      res.status(200).json({ data: files });
+    } catch (error) {
+      console.error("Error finding files in conversation:", error);
+      res.status(500).json({ error: "Internal server error" });
     }
   }
 }

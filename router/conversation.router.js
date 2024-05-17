@@ -6,7 +6,8 @@ const router = express.Router();
 
 router.post("/", authMiddleware,ConversationController.create);
 router.get("/",authMiddleware, ConversationController.getById);
-router.put("/:conversationId",authMiddleware, ConversationController.update);
+router.put("/:conversationId/members",authMiddleware, ConversationController.update);
 router.delete("/",authMiddleware, ConversationController.delete);
+router.get("/:conversationId/files", ConversationController.findFilesInConversation);
 
 export default router;

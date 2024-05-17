@@ -1,6 +1,7 @@
 import Conversation from "../model/conversation.model.js";
 import User from "../model/user.model.js";
 import mongoose from "mongoose";
+import Message from "../model/message.model.js";
 
 class ConversationService {
   async getConversationByUserId(userId) {
@@ -89,19 +90,34 @@ class ConversationService {
     }
   }
 
-  async deleteMember(conversationId, memberId) {
+  async deleteMember(conversationId, memberIds) {
     try {
       const conversation = await Conversation.findById(conversationId);
       if (!conversation) {
         throw new Error("Conversation not found");
       }
-      const index = conversation.members.indexOf(memberId);
+      const index = conversation.members.indexOf(memberIds);
       if (index === -1) {
         throw new Error("Member not found in conversation");
       }
       conversation.members.splice(index, 1);
       await conversation.save();
       return conversation;
+    } catch (error) {
+      throw new Error(error.message);
+    }
+  }
+
+  async findFilesInConversation(conversationId) {
+    try {
+      const messages = await Message.find({ conversationId });
+      const files = messages.reduce((acc, message) => {
+        if (message.files && message.files.length > 0) {
+          acc.push(...message.files);
+        }
+        return acc;
+      }, []);
+      return files;
     } catch (error) {
       throw new Error(error.message);
     }

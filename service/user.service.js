@@ -40,6 +40,15 @@ class UserService {
           throw new Error(error.message);
         }
       }
+
+      async findUserByPhoneNumber(phoneNumber) {
+        try {
+          const user = await User.findOne({ phoneNumber });
+          return user;
+        } catch (error) {
+          throw new Error(error.message);
+        }
+      }
 }  
 
 const userService = new UserService();

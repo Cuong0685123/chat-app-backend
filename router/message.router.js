@@ -10,7 +10,7 @@ const router = express.Router();
 const upload = multer({ storage });
 
 router.post("/",upload.array("files"), messageController.send);
-router.put("/:messageId/messageId", authMiddleware, messageController.revoked);
+router.put("/:messageId/revoked", authMiddleware, messageController.revoked);
 router.get("/:conversationId", messageController.getAll);
 
 
