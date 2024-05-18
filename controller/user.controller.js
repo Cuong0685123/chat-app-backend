@@ -27,7 +27,7 @@ class UserController {
         .json({ data: updatedUser });
     } catch (error) {
       console.error("Error updating user:", error);
-      res.status(StatusCodes.BAD_REQUEST).json({ error: "Internal server error" });
+      res.status(StatusCodes.FORBIDDEN).json({ error: "Internal server error" });
     }
   }
   async findUserByPhoneNumber(req, res) {
