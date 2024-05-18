@@ -8,7 +8,7 @@ class UserController {
       const user = await userService.getUserInfo(userId);
       return res.status(StatusCodes.OK).json(user);
     } catch (error) {
-      return res.status(StatusCodes.FORBIDDEN).json({ error:"no_token_provided"});
+      return res.status(StatusCodes.FORBIDDEN).json({error:"Forbidden"});
     }
   }
 
