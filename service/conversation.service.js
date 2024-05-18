@@ -28,6 +28,9 @@ class ConversationService {
       if (!allUserIdsValid) {
         throw new Error("One or more user IDs are invalid");
       }
+      if (conversation.members.length >= 3) {
+        conversation.avatar = "https://images.app.goo.gl/5wZY7jA73QDhXryd7";
+      }
       const newConversation = await Conversation.create(conversation);
       return newConversation;
     } catch (error) {
@@ -58,32 +61,36 @@ class ConversationService {
     }
   }
 
-  async updateConversation(conversationId, memberId) {
+  async  updateConversation(conversationId, memberId) {
     try {
       if (!Array.isArray(memberId)) {
-        throw new Error("memberIds");
+        throw new Error("memberId should be an array");
       }
-
+  
       const objectIdMembers = memberId.map((id) => {
         if (!mongoose.Types.ObjectId.isValid(id)) {
           throw new Error(`Invalid ObjectId: ${id}`);
         }
         return new mongoose.Types.ObjectId(id);
       });
-
+  
       const conversation = await Conversation.findById(conversationId);
       if (!conversation) {
         throw new Error("Conversation not found");
       }
-
+  
       conversation.members.push(...objectIdMembers);
-
+  
       conversation.members = [
         ...new Set(conversation.members.map((member) => member.toString())),
       ].map((id) => new mongoose.Types.ObjectId(id));
-
+  
+      if (conversation.members.length > 3) {
+        conversation.avatar = "https://images.app.goo.gl/5wZY7jA73QDhXryd7";
+      }
+  
       await conversation.save();
-
+  
       return conversation;
     } catch (error) {
       throw new Error(error.message);
