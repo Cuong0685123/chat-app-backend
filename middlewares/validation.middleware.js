@@ -12,7 +12,7 @@ export default  (schema) => {
                 const errorMessages = error.errors.map((issue) => ({
                     message: `${issue.path.join('.')} is ${issue.message}`,
                 }))
-                res.status(StatusCodes.BAD_REQUEST).json({error: 'Invalid data', details: errorMessages});
+                res.status(StatusCodes.FORBIDDEN).json({error: 'Invalid data', details: errorMessages});
             } else {
                 res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({error: 'Internal Server Error'});
             }
