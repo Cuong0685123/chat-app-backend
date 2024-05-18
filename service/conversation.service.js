@@ -90,23 +90,25 @@ class ConversationService {
     }
   }
 
-  async deleteMember(conversationId, memberIds) {
+  async deleteMembers(conversationId, memberIds) {
     try {
       const conversation = await Conversation.findById(conversationId);
       if (!conversation) {
         throw new Error("Conversation not found");
       }
-      const index = conversation.members.indexOf(memberIds);
-      if (index === -1) {
-        throw new Error("Member not found in conversation");
-      }
-      conversation.members.splice(index, 1);
+      memberIds.forEach(memberId => {
+        const index = conversation.members.indexOf(memberId);
+        if (index !== -1) {
+          conversation.members.splice(index, 1);
+        }
+      });
       await conversation.save();
       return conversation;
     } catch (error) {
       throw new Error(error.message);
     }
   }
+  
 
   async findFilesInConversation(conversationId) {
     try {

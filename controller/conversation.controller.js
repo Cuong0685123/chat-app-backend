@@ -18,7 +18,7 @@ class ConversationController {
       const conversation = await ConversationService.getConversationByUserId(
         req.userId
       );
-      return res.status(StatusCodes.OK).json({  conversation });
+      return res.status(StatusCodes.OK).json( conversation );
     } catch (error) {
       return res.status(404).json({ message: "cant not find" });
     }
@@ -41,7 +41,7 @@ class ConversationController {
   async delete(req, res) {
     try {
       const { conversationId, memberIds } = req.body;
-      const conversation = await ConversationService.deleteMember(
+      const conversation = await ConversationService.deleteMembers(
         conversationId,
         memberIds
       );
