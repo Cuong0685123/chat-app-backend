@@ -1,5 +1,5 @@
 import ConversationService from "../service/conversation.service.js";
-
+import { StatusCodes } from "http-status-codes";
 class ConversationController {
   async create(req, res) {
     try {
@@ -7,9 +7,9 @@ class ConversationController {
       const conversation = await ConversationService.createConversation({
         members: userIds,
       });
-      return res.status(201).json({ data: conversation });
+      return res.status(StatusCodes.CREATED).json({ data: conversation });
     } catch (error) {
-      return res.status(400).json({ error: error.message });
+      return res.status(StatusCodes.FORBIDDEN).json({ error: error.message });
     }
   }
 
@@ -18,7 +18,7 @@ class ConversationController {
       const conversation = await ConversationService.getConversationByUserId(
         req.userId
       );
-      return res.status(201).json({ data: conversation });
+      return res.status(StatusCodes.OK).json({ data: conversation });
     } catch (error) {
       return res.status(404).json({ message: "cant not find" });
     }

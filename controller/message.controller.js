@@ -1,5 +1,5 @@
 import MessageService from "../service/message.service.js";
-
+import { StatusCodes } from "http-status-codes";
 class MessageController {
   async send(req, res) {
     try {
@@ -35,10 +35,10 @@ class MessageController {
     try {
       const { messageId } = req.params;
       const result = await MessageService.revokeMessage(messageId);
-      res.status(201).json({data:result});
+      res.status(StatusCodes.OK).json({data:result});
     } catch (error) {
       console.error("Error revoking message:", error);
-      res.status(500).json({ error: "Internal server error" });
+      res.status(StatusCodes.OK).json({ error: "Internal server error" });
     }
   }
 
