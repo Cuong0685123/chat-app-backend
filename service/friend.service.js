@@ -50,6 +50,13 @@ class FriendServices {
 
       const newConversation = await conversation.save();
 
+      await User.findByIdAndUpdate(senderId, {
+        $addToSet: { friends: receiverId },
+      });
+      await User.findByIdAndUpdate(receiverId, {
+        $addToSet: { friends: senderId },
+      });
+
       await Friend.deleteOne({ _id: friendId });
 
       return newConversation;
@@ -74,23 +81,22 @@ class FriendServices {
     }
   }
 
+  async getFriends(userId) {
+    try {
+      const user = await User.findById(userId).populate(
+        "friends",
+        "displayName phoneNumber avatar"
+      );
 
-async  getFriends(userId) {
-  try {
-  
-    const user = await User.findById(userId).populate('friends', 'displayName phoneNumber avatar');
-    
-    if (!user) {
-      throw new Error("User not found");
+      if (!user) {
+        throw new Error("User not found");
+      }
+
+      return user.friends;
+    } catch (error) {
+      throw new Error(error.message);
     }
-    
-    return user.friends;
-  } catch (error) {
-    throw new Error(error.message);
   }
-}
-
-
 }
 const friendService = new FriendServices();
 export default friendService;

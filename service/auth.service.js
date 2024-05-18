@@ -14,7 +14,7 @@ import RevokedRefreshToken from "../model/revokedRefreshToken.model.js";
 
 const expiredTime = Number(process.env.EXPIRED_TIME || 10000000000000 * 6);
 class AuthServices {
-  async signup(phoneNumber, password, displayName) {
+  async signup(phoneNumber, password, displayName, avatar) {
     const existingUser = await User.findOne({ phoneNumber });
 
     if (existingUser) {
@@ -27,6 +27,7 @@ class AuthServices {
       phoneNumber,
       password: hashedPassword,
       displayName,
+      avatar,
     });
     await newUser.save();
     const accessTokenClaims = {
