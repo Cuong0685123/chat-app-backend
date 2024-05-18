@@ -7,7 +7,7 @@ import authMiddleware from "../middlewares/auth.middleware.js";
 const router = express.Router();
 
 router.post('/',authMiddleware, friendController.add);
-router.put('/:receiverId/receiverId/accept',authMiddleware, friendController.accept);
+router.put('/:receiverId/accept',authMiddleware, friendController.accept);
 router.delete('/:friendId', friendController.delete);
 
 
