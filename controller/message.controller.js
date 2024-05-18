@@ -35,7 +35,7 @@ class MessageController {
     try {
       const { messageId } = req.params;
       const result = await MessageService.revokeMessage(messageId);
-      res.status(StatusCodes.OK).json({data:result});
+      res.status(StatusCodes.OK).json(result);
     } catch (error) {
       console.error("Error revoking message:", error);
       res.status(StatusCodes.OK).json({ error: "Internal server error" });
@@ -48,7 +48,7 @@ class MessageController {
       const { page = 1, limit = 5 } = req.query;
 
       const result = await MessageService.getAllMessages(conversationId, parseInt(page), parseInt(limit));
-      res.status(200).json({ data: result });
+      res.status(200).json( result );
     } catch (error) {
       console.error("Error retrieving messages:", error);
       res.status(500).json({ error: "Internal server error" });

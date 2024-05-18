@@ -22,30 +22,35 @@ class FriendServices {
       throw new Error(error.message);
     }
   }
-  async acceptInvitation(senderId, receiverId) {
+  async acceptInvitation(friendId) {
     try {
-      const existingConversation = await Conversation.findOne({
-        members: { $all: [senderId, receiverId] },
-      });
-      if (existingConversation) {
-        return existingConversation;
-      }
-
       const invitation = await Friend.findOneAndUpdate(
-        { senderId, receiverId },
+        { _id: friendId },
         { status: 1 },
         { new: true }
       );
+
       if (!invitation) {
         throw new Error("Friendship not found");
+      }
+
+      const { senderId, receiverId } = invitation;
+
+      const existingConversation = await Conversation.findOne({
+        members: { $all: [senderId, receiverId] },
+      });
+
+      if (existingConversation) {
+        return existingConversation;
       }
 
       const conversation = new Conversation({
         members: [senderId, receiverId],
       });
+
       const newConversation = await conversation.save();
 
-      await Friend.deleteOne({ senderId, receiverId });
+      await Friend.deleteOne({ _id: friendId });
 
       return newConversation;
     } catch (error) {
@@ -68,7 +73,24 @@ class FriendServices {
       throw new Error(error.message);
     }
   }
+
+
+async  getFriends(userId) {
+  try {
+  
+    const user = await User.findById(userId).populate('friends', 'displayName phoneNumber avatar');
+    
+    if (!user) {
+      throw new Error("User not found");
+    }
+    
+    return user.friends;
+  } catch (error) {
+    throw new Error(error.message);
+  }
 }
 
+
+}
 const friendService = new FriendServices();
 export default friendService;

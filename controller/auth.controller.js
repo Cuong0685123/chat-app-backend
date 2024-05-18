@@ -3,9 +3,9 @@ import { StatusCodes } from "http-status-codes";
 class AuthController {
   async signup(req, res, next) {
     try {
-        const {phoneNumber, password} = req.body;
+        const {phoneNumber, password, displayName} = req.body;
         const newUser = await authService.signup(
-          phoneNumber, password);
+          phoneNumber, password, displayName);
         res.status(StatusCodes.CREATED).json(newUser);
     } catch (err) {
         return next(err);

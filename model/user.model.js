@@ -2,10 +2,10 @@ import mongoose from "mongoose";
 
 const userSchema = new mongoose.Schema(
   {
-    friends:  {
+    friends:[  {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
-    },
+    }],
     phoneNumber: {
       type: String,
       required: true,

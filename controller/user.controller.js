@@ -28,7 +28,7 @@ class UserController {
       });
       res
         .status(200)
-        .json({ data: updatedUser });
+        .json( updatedUser );
     } catch (error) {
       console.error("Error updating user:", error);
       res.status(StatusCodes.FORBIDDEN).json({ error: "Internal server error" });
@@ -41,7 +41,7 @@ class UserController {
       if (!user) {
         return res.status(StatusCodes.NOT_FOUND).json({ message: "User not found" });
       }
-      res.status(StatusCodes.OK).json({ data: user });
+      res.status(StatusCodes.OK).json( user );
     } catch (error) {
       console.error("Error finding user:", error);
       res.status(StatusCodes.BAD_REQUEST).json({ error: "Internal server error" });
