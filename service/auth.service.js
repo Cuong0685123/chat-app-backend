@@ -12,7 +12,7 @@ import RefreshToken from "../model/refreshToken.model.js";
 import mongoose from "mongoose";
 import RevokedRefreshToken from "../model/revokedRefreshToken.model.js";
 
-const expiredTime = Number(process.env.EXPIRED_TIME || 100000000000000000 * 6);
+const expiredTime = Number(process.env.EXPIRED_TIME || 10000000000000 * 6);
 class AuthServices {
   async signup(phoneNumber, password) {
     const existingUser = await User.findOne({ phoneNumber });
