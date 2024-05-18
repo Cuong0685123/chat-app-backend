@@ -46,7 +46,7 @@ class FriendController {
   }
   async getFriendList(req, res) {
     try {
-      const { userId } = req.params;
+      const { userId } = req;
 
       const friends = await friendService.getFriends(userId);
 
