@@ -25,7 +25,6 @@ class AuthController {
 async regenerateAccessToken(req, res, next) {
   try {
       const { token } = req.body;
-
       const regeneratedAccessTokenResponse = await authService.regenerateAccessToken(token);
 
       return res.status(StatusCodes.OK).json(regeneratedAccessTokenResponse);
