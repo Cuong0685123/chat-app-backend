@@ -52,7 +52,7 @@ const UnhandledErrorMiddleware = (err, req, res, next) => {
     }
     else if (err instanceof NoTokenProvidedError) {
         errorCode = err.name;
-        statusCode = StatusCodes.BAD_REQUEST;
+        statusCode = StatusCodes.FORBIDDEN;
         error = 'Token no provided';
         message = err.message || 'Token no provided';
     }
