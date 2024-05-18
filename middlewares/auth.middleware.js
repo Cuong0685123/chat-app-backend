@@ -18,7 +18,6 @@ const authMiddleware = (req, res, next) => {
 
     const claims = jwt.verify(token, process.env.JWT_SECRET);
     const { sub } = claims;
-
     req.userId = sub;
     next();
   } catch (error) {

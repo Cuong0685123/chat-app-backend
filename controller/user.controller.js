@@ -3,10 +3,9 @@ import { StatusCodes } from "http-status-codes";
 
 class UserController {
   async getUserInfo(req, res, next) {
-    const { userId } = req.body;
     try {
+      const { userId } = req;
       const user = await userService.getUserInfo(userId);
-
       return res.status(StatusCodes.OK).json(user);
     } catch (error) {
       next(error);
