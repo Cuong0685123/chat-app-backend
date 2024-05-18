@@ -8,6 +8,6 @@ const router = Router();
 const upload = multer({ storage });
 router.get('/', authMiddleware, userController.getUserInfo);
 router.put('/:userId', upload.single("avatar"), authMiddleware, userController.update);
-router.get('/:phoneNumber/', userController.findUserByPhoneNumber );
+router.get('/:phoneNumber/phone', userController.findUserByPhoneNumber );
 
 export default router;

@@ -1,4 +1,5 @@
 import Message from "../model/message.model.js";
+import {io}from  "../socket/socket.js";
 
 class MessageService {
   async sendMessage(messageData) {
@@ -14,6 +15,7 @@ class MessageService {
         senderId,
       });
       const savedMessage = await newMessage.save();
+      io.to(conversationId).emit('chat message', savedMessage);
       return savedMessage;
     } catch (error) {
       throw new Error(error.message);
