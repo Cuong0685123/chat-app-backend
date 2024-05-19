@@ -68,30 +68,23 @@ class MessageService {
 
   async  getAllMessages(conversationId, page = 1, limit = 5) {
     try {
-    
       const skip = Math.max(0, (page - 1) * limit);
   
-      // Fetch the current page of messages
+      // Lấy trang tin nhắn hiện tại với skip và limit
       const messagesPage = await Message.find({ conversationId })
-        .sort({ createdAt: -1 }) 
         .skip(skip)
         .limit(limit)
         .populate('senderId', 'phoneNumber displayName avatar');
   
-      // Fetch the last five elements
-      const lastFiveMessages = await Message.find({ conversationId })
-        .sort({ createdAt: -1 }) 
-        .limit(5)
-        .populate('senderId', 'phoneNumber displayName avatar');
-  
+        
       return {
-        messages: messagesPage,
-        lastFiveMessages: lastFiveMessages
+        messages: messagesPage
       };
     } catch (error) {
       throw new Error(error.message);
     }
   }
+  
   
   // Usage
   // const page = 1;
