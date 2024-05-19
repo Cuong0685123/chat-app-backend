@@ -68,40 +68,38 @@ class MessageService {
 
   async  getAllMessages(conversationId, page = 1, limit = 5) {
     try {
+    
       const skip = Math.max(0, (page - 1) * limit);
-      const totalMessages = await Message.countDocuments({ conversationId });
-      const totalPages = Math.ceil(totalMessages / limit);
-      const messages = await Message.find({ conversationId })
+  
+      // Fetch the current page of messages
+      const messagesPage = await Message.find({ conversationId })
         .sort({ createdAt: -1 }) 
         .skip(skip)
         .limit(limit)
         .populate('senderId', 'phoneNumber displayName avatar');
-      const formattedMessages = messages.map((message) => {
-        const messageObject = message.toObject();
-        if (message.revoked) {
-          return {
-            ...messageObject,
-            text: null,
-            files: null,
-            sender: message.senderId,
-          };
-        } else {
-          return {
-            ...messageObject,
-            sender: message.senderId,
-          };
-        }
-      });
+  
+      // Fetch the last five elements
+      const lastFiveMessages = await Message.find({ conversationId })
+        .sort({ createdAt: -1 }) 
+        .limit(5)
+        .populate('senderId', 'phoneNumber displayName avatar');
+  
       return {
-        page,
-        totalPages,
-        limit,
-        messages: formattedMessages,
+        messages: messagesPage,
+        lastFiveMessages: lastFiveMessages
       };
     } catch (error) {
       throw new Error(error.message);
     }
   }
+  
+  // Usage
+  // const page = 1;
+  // const limit = 5;
+  // const result = await getAllMessages(conversationId, page, limit);
+  // console.log(result.messages); // Current page messages
+  // console.log(result.lastFiveMessages); // Last five messages
+  
 
 }
 
