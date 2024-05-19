@@ -10,18 +10,17 @@ class ConversationService {
       const conversations = await Conversation.find({
         members: { $in: arrayCondition },
       })
-      .populate("message")
+        .populate("message")
         .populate({
           path: "members",
           select: "-password",
         });
-  
+
       return conversations;
     } catch (error) {
       throw new Error(error.message);
     }
   }
-  
 
   async createConversation(conversation) {
     try {
@@ -35,6 +34,13 @@ class ConversationService {
       if (conversation.members.length >= 3) {
         conversation.avatar = "https://images.app.goo.gl/5wZY7jA73QDhXryd7";
       }
+      conversation.admin = conversation.members[0];
+      const creator = await User.findById(conversation.admin);
+      if (!creator) {
+        throw new Error("Creator not found");
+      }
+      conversation.name = `Được Tạo Bởi ${creator.displayName}`;
+
       const newConversation = await Conversation.create(conversation);
       return newConversation;
     } catch (error) {
@@ -126,9 +132,8 @@ class ConversationService {
       const files = messages.reduce((acc, message) => {
         if (message.files && message.files.length > 0) {
           acc.push(...message.files);
-          
         }
-        
+
         return acc;
       }, []);
       return files;
@@ -140,9 +145,8 @@ class ConversationService {
     try {
       const conversation = await Conversation.find({
         members: { $in: [userId] },
-       
       })
-      .populate("message")
+        .populate("message")
         .populate({
           path: "members",
           select: "-password",
@@ -150,7 +154,7 @@ class ConversationService {
       if (!conversation) {
         throw new Error("Conversation not found");
       }
-      
+
       return conversation;
     } catch (error) {
       throw new Error(error.message);
@@ -171,13 +175,12 @@ class ConversationService {
         {
           new: true,
         }
-        
       )
-      .populate("message")
-      .populate({
-        path: "members",
-        select: "-password",
-      });
+        .populate("message")
+        .populate({
+          path: "members",
+          select: "-password",
+        });
       if (!updatedConversation) {
         throw new Error("conversation not found");
       }
@@ -187,7 +190,23 @@ class ConversationService {
       throw new Error(error.message);
     }
   }
-}
+  async getConversationById(conversationId) {
+    try {
+      const conversation = await Conversation.findById(conversationId)
+        .populate({
+          path: "members",
+          select: "-password",
+        })
+        .populate("message");
+      if (!conversation) {
+        throw new Error("Conversation not found");
+      }
 
+      return conversation;
+    } catch (error) {
+      throw new Error(error.message);
+    }
+  }
+}
 const conversationService = new ConversationService();
 export default conversationService;

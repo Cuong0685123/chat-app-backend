@@ -15,5 +15,6 @@ router.delete("/",authMiddleware, ConversationController.delete);
 router.get("/:conversationId", ConversationController.findFilesInConversation);
 router.get("/:userId/members", ConversationController.getConversationByUserId);
 router.put("/:conversationId",upload.single('avatar'), ConversationController.update);
+router.get("/:conversationId/Id", ConversationController.getConversationById);
 
 export default router;
