@@ -13,29 +13,28 @@ class ConversationController {
     }
   }
 
-  async getById(req, res) {
+  async getByToken(req, res) {
     try {
-      const conversation = await ConversationService.getConversationByUserId(
+      const conversation = await ConversationService.getConversationByToken(
         req.userId
       );
       return res.status(StatusCodes.OK).json( conversation );
     } catch (error) {
-      return res.status(404).json({ message: "cant not find" });
+      return res.status(StatusCodes.NOT_FOUND).json({ message: "cant not find" });
     }
   }
-  async update(req, res) {
+  async add(req, res) {
     try {
       const{conversationId} = req.params;
       const{memberId} = req.body;
-      const conversation = await ConversationService.updateConversation(
+      const conversation = await ConversationService.addMembers(
         conversationId,
         memberId
       );
 
-      return res.status(201).json( conversation );
+      return res.status(StatusCodes.OK).json( conversation );
     } catch (error) {
-      console.error("Error adding member to conversation:", error);
-      return res.status(500).json({ error: "Internal server error" });
+      return res.status(StatusCodes.NOT_FOUND).json({ error: "Error adding member to conversation" });
     }
   }
   async delete(req, res) {
@@ -45,21 +44,42 @@ class ConversationController {
         conversationId,
         memberIds
       );
-      return res.status(201).json(conversation );
+      return res.status(StatusCodes.OK).json(conversation );
     } catch (error) {
-      console.error("Error removing member from conversation:", error);
-      return res.status(500).json({ error: "Internal server error" });
+     return res.status(StatusCodes.NOT_FOUND).json({ error: "Error deleting member from conversation" });
     }
   }
   async findFilesInConversation(req, res) {
     try {
       const { conversationId } = req.params;
       const files = await ConversationService.findFilesInConversation(conversationId);
-      res.status(200).json( files );
+      res.status(StatusCodes.OK).json( files );
     } catch (error) {
-      console.error("Error finding files in conversation:", error);
-      res.status(500).json({ error: "Internal server error" });
+      return res.status(StatusCodes.NOT_FOUND).json({ error: "Error finding files in conversation" });
     }
+  }
+  async getConversationByUserId(req, res){
+    try {
+      const{userId} = req.params;
+      const conversation = await ConversationService.getConversationByUserId(userId);
+      res.status(StatusCodes.OK).json(conversation);
+    } catch (error) {
+    return res.status(StatusCodes.NOT_FOUND).json({ error: "Error finding conversation by user id" });
+    }
+  }
+  async update (req, res){
+    try {
+      const {conversationId} = req.params;
+      const {name, avatar} =req.body;
+      const uploadedFilesUrls = req.file?.location;
+      const updateConversation = await ConversationService.updateConversation(conversationId, {
+      name,
+        avatar: uploadedFilesUrls,
+      });
+      res.status(StatusCodes.OK).json( updateConversation );
+  } catch (error) {
+   return res.status(StatusCodes.FORBIDDEN).json({ error: "cant update" });
+  }
   }
 }
 const conversationController = new ConversationController();

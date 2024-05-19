@@ -12,7 +12,7 @@ class UserController {
       return res.status(StatusCodes.ACCEPTED).json(user);
     } catch (error) {
       console.error("Error finding user:", error);
-      res.status(StatusCodes.BAD_REQUEST).json({ error: "Internal server error" }); 
+      res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error: "Internal server error" }); 
     }
   }
 

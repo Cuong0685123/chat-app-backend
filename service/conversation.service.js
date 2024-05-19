@@ -4,7 +4,7 @@ import mongoose from "mongoose";
 import Message from "../model/message.model.js";
 
 class ConversationService {
-  async getConversationByUserId(userId) {
+  async getConversationByToken(userId) {
     try {
       const arrayCondition = [userId];
       const conversations = await Conversation.find({
@@ -61,7 +61,7 @@ class ConversationService {
     }
   }
 
-  async  updateConversation(conversationId, memberId) {
+  async  addMembers(conversationId, memberId) {
     try {
       if (!Array.isArray(memberId)) {
         throw new Error("memberId should be an array");
@@ -130,6 +130,40 @@ class ConversationService {
     } catch (error) {
       throw new Error(error.message);
     }
+  }
+  async getConversationByUserId (userId){
+    try {
+      const conversation = await Conversation.find({members:{$in:[userId]}})
+      if(!conversation){
+        throw new Error("Conversation not found")
+      }
+      return conversation;
+    } catch (error) {
+      throw new Error(error.message);
+    }
+  }
+  async updateConversation (conversationId, conversationFields){
+    try {
+      const updateFields = {};
+          if (conversationFields.name) {
+            updateFields.name = conversationFields.name;
+          }
+          if (conversationFields.avatar) {
+            updateFields.avatar = conversationFields.avatar;
+          }
+          const updatedConversation = await Conversation.findByIdAndUpdate(conversationId, updateFields, {
+            new: true,
+          });
+    
+          if (!updatedConversation) {
+            throw new Error("conversation not found");
+          }
+    
+          return updatedConversation;
+        } catch (error) {
+          throw new Error(error.message);
+        }
+    
   }
 }
 

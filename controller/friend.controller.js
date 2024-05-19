@@ -5,12 +5,9 @@ class FriendController {
     try {
       const { senderId, receiverId } = req.body;
       const newFriendship = await friendService.addFriend(senderId, receiverId);
-      res.status(201).json(newFriendship);
+      return res.status(StatusCodes.CREATED).json(newFriendship);
     } catch (error) {
-      console.error("Error adding friend:", error);
-      res
-        .status(500)
-        .json({ error: "Error adding friend", details: error.message });
+      return res.status(StatusCodes.BAD_REQUEST).json(error.message);
     }
   }
   async accept(req, res) {
@@ -20,14 +17,9 @@ class FriendController {
 
       const newConversation = await friendService.acceptInvitation(friendId);
 
-      res.status(201).json(newConversation);
+      return  res.status(StatusCodes.OK).json(newConversation);
     } catch (error) {
-      console.error("Error accepting friend invitation:", error);
-
-      res.status(500).json({
-        error: "Error accepting friend invitation",
-        details: error.message,
-      });
+      return res.status(StatusCodes.BAD_REQUEST).json(error.message);
     }
   }
 
@@ -35,13 +27,13 @@ class FriendController {
     try {
       const { friendId } = req.params;
       const deletedInvitation = await friendService.deleteInvitation(friendId);
-      res.status(201).json({
+      res.status(StatusCodes.OK).json({
         message: "Invitation deleted successfully",
         deletedInvitation,
       });
     } catch (error) {
-      console.error("Error deleting invitation:", error);
-      res.status(500).json({ error: "Internal server error" });
+
+      res.status(StatusCodes.BAD_REQUEST).json({ error: "cant delete" });
     }
   }
   async getFriendList(req, res) {
@@ -50,11 +42,11 @@ class FriendController {
 
       const friends = await friendService.getFriends(userId);
 
-      res.status(200).json(friends);
+      res.status(StatusCodes.OK).json(friends);
     } catch (error) {
       console.error("Lỗi khi lấy danh sách bạn bè:", error);
 
-      res.status(500).json({
+      res.status(StatusCodes.BAD_REQUEST).json({
         error: "Lỗi khi lấy danh sách bạn bè",
         details: error.message,
       });

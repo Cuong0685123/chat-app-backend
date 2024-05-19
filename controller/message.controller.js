@@ -22,7 +22,7 @@ class MessageController {
       });
 
       return res
-        .status(201)
+        .status(StatusCodes.OK)
         .json({ message: savedMessage, uploadedFiles: uploadedFilesUrls });
     } catch (error) {
       return res
@@ -35,10 +35,9 @@ class MessageController {
     try {
       const { messageId } = req.params;
       const result = await MessageService.revokeMessage(messageId);
-      res.status(StatusCodes.OK).json(result);
+      return res.status(StatusCodes.OK).json(result);
     } catch (error) {
-      console.error("Error revoking message:", error);
-      res.status(StatusCodes.OK).json({ error: "Internal server error" });
+    return res.status(StatusCodes.BAD_REQUEST).json({ error: "Error revoking message", details: error.message });
     }
   }
 
@@ -48,10 +47,10 @@ class MessageController {
       const { page = 1, limit = 5 } = req.query;
 
       const result = await MessageService.getAllMessages(conversationId, parseInt(page), parseInt(limit));
-      res.status(200).json( result );
+     return res.status(StatusCodes.OK).json( result );
     } catch (error) {
       console.error("Error retrieving messages:", error);
-      res.status(500).json({ error: "Internal server error" });
+     return res.status(StatusCodes.NOT_FOUND).json({ error: "cant find Message" });
     }
   }
 }
