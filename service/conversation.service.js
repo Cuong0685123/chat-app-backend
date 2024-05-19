@@ -15,23 +15,23 @@ class ConversationService {
           select: "-password",
         })
         .populate("lastMessage");
-      const messagesPromises = conversations.map(async (conversation) => {
-        const messageId = conversation.message;
-        if (messageId) {
-          const message = await Message.findById(messageId, "_id");
-          return message ? message._id : null;
-        }
-        return null;
-      });
-      const messages = await Promise.all(messagesPromises);
-      conversations.forEach((conversation, index) => {
-        conversation.message = messages[index] ?? [];
-      });
-      return conversations;
+  
+      const conversationsWithMessages = await Promise.all(conversations.map(async (conversation) => {
+      
+        const messages = await Message.find({ conversationId: conversation._id });
+        
+        return {
+          ...conversation.toObject(),
+          messages: messages,
+        };
+      }));
+  
+      return conversationsWithMessages;
     } catch (error) {
       throw new Error(error.message);
     }
   }
+  
 
   async createConversation(conversation) {
     try {
