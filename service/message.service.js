@@ -74,7 +74,7 @@ class MessageService {
             .populate('senderId', 'phoneNumber displayName avatar');
 
   
-        const latestMessages = allMessages.slice(0, 5);
+        const latestMessages = allMessages.slice(0, 20);
 
         return {
             messages: latestMessages
