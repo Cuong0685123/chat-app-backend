@@ -1,5 +1,6 @@
 import Message from "../model/message.model.js";
 import User from "../model/user.model.js";
+import Conversation from "../model/conversation.model.js";
 
 class MessageService {
   async sendMessage(messageData) {
@@ -17,7 +18,14 @@ class MessageService {
       });
 
       const savedMessage = await newMessage.save();
-
+      const conversation = await Conversation.findOneAndUpdate(
+        { _id: conversationId },
+        { $set: { message: savedMessage._id } },
+        { new: true }
+      );
+      if (!conversation) {
+        throw new Error("Conversation not found");
+      }
       const sender = await User.findById(senderId);
       if (!sender) {
         throw new Error("Sender not found");

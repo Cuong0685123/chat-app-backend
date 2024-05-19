@@ -12,8 +12,8 @@ router.post("/", authMiddleware,ConversationController.create);
 router.get("/",authMiddleware, ConversationController.getByToken);
 router.put("/:conversationId/members",authMiddleware, ConversationController.add);
 router.delete("/",authMiddleware, ConversationController.delete);
-router.get("/:conversationId/files", ConversationController.findFilesInConversation);
-router.get("/:userId", ConversationController.getConversationByUserId);
+router.get("/:conversationId", ConversationController.findFilesInConversation);
+router.get("/:userId/members", ConversationController.getConversationByUserId);
 router.put("/:conversationId",upload.single('avatar'), ConversationController.update);
 
 export default router;

@@ -6,10 +6,11 @@ const conversationSchema = new mongoose.Schema(
             type: String,
             default: null,
         },
-        messages: [{
+        message: {
             type: mongoose.Schema.Types.ObjectId,
             ref: "Message",
-        }],
+            default:null,
+        },
         avatar: {
             type: String,
             default: null,

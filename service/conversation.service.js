@@ -10,9 +10,23 @@ class ConversationService {
       const conversations = await Conversation.find({
         members: { $in: arrayCondition },
       })
-        .populate("members")
+        .populate({
+          path: "members",
+          select: "-password",
+        })
         .populate("lastMessage");
-      conversations.messages = conversations?.messages?.slice(-1) ?? [];
+      const messagesPromises = conversations.map(async (conversation) => {
+        const messageId = conversation.message;
+        if (messageId) {
+          const message = await Message.findById(messageId, "_id");
+          return message ? message._id : null;
+        }
+        return null;
+      });
+      const messages = await Promise.all(messagesPromises);
+      conversations.forEach((conversation, index) => {
+        conversation.message = messages[index] ?? [];
+      });
       return conversations;
     } catch (error) {
       throw new Error(error.message);
@@ -61,36 +75,36 @@ class ConversationService {
     }
   }
 
-  async  addMembers(conversationId, memberId) {
+  async addMembers(conversationId, memberId) {
     try {
       if (!Array.isArray(memberId)) {
         throw new Error("memberId should be an array");
       }
-  
+
       const objectIdMembers = memberId.map((id) => {
         if (!mongoose.Types.ObjectId.isValid(id)) {
           throw new Error(`Invalid ObjectId: ${id}`);
         }
         return new mongoose.Types.ObjectId(id);
       });
-  
+
       const conversation = await Conversation.findById(conversationId);
       if (!conversation) {
         throw new Error("Conversation not found");
       }
-  
+
       conversation.members.push(...objectIdMembers);
-  
+
       conversation.members = [
         ...new Set(conversation.members.map((member) => member.toString())),
       ].map((id) => new mongoose.Types.ObjectId(id));
-  
+
       if (conversation.members.length > 3) {
         conversation.avatar = "https://images.app.goo.gl/5wZY7jA73QDhXryd7";
       }
-  
+
       await conversation.save();
-  
+
       return conversation;
     } catch (error) {
       throw new Error(error.message);
@@ -103,7 +117,7 @@ class ConversationService {
       if (!conversation) {
         throw new Error("Conversation not found");
       }
-      memberIds.forEach(memberId => {
+      memberIds.forEach((memberId) => {
         const index = conversation.members.indexOf(memberId);
         if (index !== -1) {
           conversation.members.splice(index, 1);
@@ -115,7 +129,6 @@ class ConversationService {
       throw new Error(error.message);
     }
   }
-  
 
   async findFilesInConversation(conversationId) {
     try {
@@ -131,39 +144,44 @@ class ConversationService {
       throw new Error(error.message);
     }
   }
-  async getConversationByUserId (userId){
+  async getConversationByUserId(userId) {
     try {
-      const conversation = await Conversation.find({members:{$in:[userId]}})
-      if(!conversation){
-        throw new Error("Conversation not found")
+      const conversation = await Conversation.find({
+        members: { $in: [userId] },
+      });
+      if (!conversation) {
+        throw new Error("Conversation not found");
       }
       return conversation;
     } catch (error) {
       throw new Error(error.message);
     }
   }
-  async updateConversation (conversationId, conversationFields){
+  async updateConversation(conversationId, conversationFields) {
     try {
       const updateFields = {};
-          if (conversationFields.name) {
-            updateFields.name = conversationFields.name;
-          }
-          if (conversationFields.avatar) {
-            updateFields.avatar = conversationFields.avatar;
-          }
-          const updatedConversation = await Conversation.findByIdAndUpdate(conversationId, updateFields, {
-            new: true,
-          });
-    
-          if (!updatedConversation) {
-            throw new Error("conversation not found");
-          }
-    
-          return updatedConversation;
-        } catch (error) {
-          throw new Error(error.message);
+      if (conversationFields.name) {
+        updateFields.name = conversationFields.name;
+      }
+      if (conversationFields.avatar) {
+        updateFields.avatar = conversationFields.avatar;
+      }
+      const updatedConversation = await Conversation.findByIdAndUpdate(
+        conversationId,
+        updateFields,
+        {
+          new: true,
         }
-    
+      );
+
+      if (!updatedConversation) {
+        throw new Error("conversation not found");
+      }
+
+      return updatedConversation;
+    } catch (error) {
+      throw new Error(error.message);
+    }
   }
 }
 

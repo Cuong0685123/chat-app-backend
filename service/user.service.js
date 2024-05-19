@@ -9,7 +9,7 @@ class UserService {
       _id: _userId,
     };
 
-    const userFounded = await User.findOne(filter).exec();
+    const userFounded = await User.findOne(filter).select('-password').exec();
 
     if (!userFounded) {
       throw new UserNotFoundError(`User with id: ${userId} not found!`);
@@ -47,12 +47,13 @@ class UserService {
   }
   async findUserByPhoneNumber(phoneNumber) {
     try {
-      const user = await User.findOne({ phoneNumber });
+      const user = await User.findOne({ phoneNumber }).select('-password');
       return user;
     } catch (error) {
       throw new Error(error.message);
     }
   }
+
 }
 
 const userService = new UserService();
