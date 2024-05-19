@@ -10,11 +10,11 @@ const router = express.Router();
 
 router.post("/", authMiddleware,ConversationController.create);
 router.get("/",authMiddleware, ConversationController.getByToken);
-router.put("/:conversationId/members",authMiddleware, ConversationController.add);
+router.put("/:conversationId/user",authMiddleware, ConversationController.add);
 router.delete("/",authMiddleware, ConversationController.delete);
 router.get("/:conversationId", ConversationController.findFilesInConversation);
 router.get("/:userId/members", ConversationController.getConversationByUserId);
 router.put("/:conversationId",upload.single('avatar'), ConversationController.update);
-router.get("/:conversationId/user", ConversationController.getConversationById);
+router.get("/:conversationId", ConversationController.getConversationById);
 
 export default router;

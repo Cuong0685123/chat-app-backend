@@ -23,6 +23,10 @@ const userSchema = new mongoose.Schema(
             type: String,
             default: null
         },
+        friendRequests: [{
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "User",
+        }]
     },
     {timestamps: true}
 );
