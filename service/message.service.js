@@ -70,6 +70,7 @@ class MessageService {
     try {
       const skip = (page - 1) * limit;
       const messages = await Message.find({ conversationId })
+        .sort({ createdAt: -1 })
         .skip(skip)
         .limit(limit)
         .populate('senderId', 'phoneNumber displayName avatar') 
