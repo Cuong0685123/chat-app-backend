@@ -12,7 +12,7 @@ router.post("/", authMiddleware,ConversationController.create);
 router.get("/",authMiddleware, ConversationController.getByToken);
 router.put("/:conversationId/user",authMiddleware, ConversationController.add);
 router.delete("/",authMiddleware, ConversationController.delete);
-router.get("/:conversationId", ConversationController.findFilesInConversation);
+router.get("/:conversationId/files", ConversationController.findFilesInConversation);
 router.get("/:userId/members", ConversationController.getConversationByUserId);
 router.put("/:conversationId",upload.single('avatar'), ConversationController.update);
 router.get("/:conversationId", ConversationController.getConversationById);
