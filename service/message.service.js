@@ -66,24 +66,24 @@ class MessageService {
 
 
 
-  async  getAllMessages(conversationId, page = 1, limit = 5) {
+  async  getAllMessages(conversationId) {
     try {
-      const skip = Math.max(0, (page - 1) * limit);
+        // Lấy tất cả tin nhắn, sắp xếp theo thứ tự giảm dần của createdAt
+        const allMessages = await Message.find({ conversationId })
+            .sort({ createdAt: -1 })
+            .populate('senderId', 'phoneNumber displayName avatar');
+
   
-      // Lấy trang tin nhắn hiện tại với skip và limit, sắp xếp theo thứ tự tăng dần của _id
-      const messagesPage = await Message.find({ conversationId })
-      .sort({ createdAt: 1 }) // Sắp xếp tin nhắn theo thứ tự tăng dần của createdAt
-      .skip(skip)
-      .limit(limit)
-      .populate('senderId', 'phoneNumber displayName avatar');
-  
-      return {
-        messages: messagesPage // Đảo ngược thứ tự của tin nhắn trước khi trả về
-      };
+        const latestMessages = allMessages.slice(0, 5);
+
+        return {
+            messages: latestMessages
+        };
     } catch (error) {
-      throw new Error(error.message);
+        throw new Error(error.message);
     }
-  }
+}
+
   
 }
 
