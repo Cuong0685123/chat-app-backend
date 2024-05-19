@@ -10,23 +10,13 @@ class ConversationService {
       const conversations = await Conversation.find({
         members: { $in: arrayCondition },
       })
+      .populate("message")
         .populate({
           path: "members",
           select: "-password",
-        })
-        .populate("lastMessage");
+        });
   
-      const conversationsWithMessages = await Promise.all(conversations.map(async (conversation) => {
-      
-        const messages = await Message.find({ conversationId: conversation._id });
-        
-        return {
-          ...conversation.toObject(),
-          messages: messages,
-        };
-      }));
-  
-      return conversationsWithMessages;
+      return conversations;
     } catch (error) {
       throw new Error(error.message);
     }
@@ -136,7 +126,9 @@ class ConversationService {
       const files = messages.reduce((acc, message) => {
         if (message.files && message.files.length > 0) {
           acc.push(...message.files);
+          
         }
+        
         return acc;
       }, []);
       return files;
@@ -148,10 +140,17 @@ class ConversationService {
     try {
       const conversation = await Conversation.find({
         members: { $in: [userId] },
-      });
+       
+      })
+      .populate("message")
+        .populate({
+          path: "members",
+          select: "-password",
+        });
       if (!conversation) {
         throw new Error("Conversation not found");
       }
+      
       return conversation;
     } catch (error) {
       throw new Error(error.message);
@@ -172,8 +171,13 @@ class ConversationService {
         {
           new: true,
         }
-      );
-
+        
+      )
+      .populate("message")
+      .populate({
+        path: "members",
+        select: "-password",
+      });
       if (!updatedConversation) {
         throw new Error("conversation not found");
       }
