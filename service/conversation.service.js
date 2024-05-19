@@ -98,6 +98,12 @@ class ConversationService {
       if (conversation.members.length > 3) {
         conversation.avatar = "https://images.app.goo.gl/5wZY7jA73QDhXryd7";
       }
+      conversation.admin = conversation.members[0];
+      const creator = await User.findById(conversation.admin);
+      if (!creator) {
+        throw new Error("Creator not found");
+      }
+      conversation.name = `Được Tạo Bởi ${creator.displayName}`;
 
       await conversation.save();
 
