@@ -7,7 +7,7 @@ import multer from "multer";
 const router = Router();
 const upload = multer({ storage });
 router.get('/', authMiddleware, userController.getUserInfo);
-router.put('/:userId', upload.single("avatar"), authMiddleware, userController.update);
+router.put('/', upload.single("avatar"), authMiddleware, userController.update);
 router.get('/:phoneNumber/phone', userController.findUserByPhoneNumber );
 
 export default router;

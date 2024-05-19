@@ -18,7 +18,7 @@ class UserController {
 
   async update(req, res) {
     try {
-      const { userId } = req.params;
+      const { userId } = req;
       const { displayName, avatar } = req.body;
 
       const uploadedFilesUrls = req.file?.location; 
