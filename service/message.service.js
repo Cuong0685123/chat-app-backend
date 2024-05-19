@@ -70,36 +70,22 @@ class MessageService {
     try {
       const skip = Math.max(0, (page - 1) * limit);
   
-      // Lấy trang tin nhắn hiện tại với skip và limit
+      // Lấy trang tin nhắn hiện tại với skip và limit, sắp xếp theo thứ tự tăng dần của _id
       const messagesPage = await Message.find({ conversationId })
-        .skip(skip)
-        .limit(limit)
-        .populate('senderId', 'phoneNumber displayName avatar');
-  
-        const lastFiveMessages = await Message.find({ conversationId })
-        .sort({ createdAt: -1 }) // Sắp xếp theo thời gian tạo giảm dần
-        .limit(5)
-        .populate('senderId', 'phoneNumber displayName avatar');
+      .sort({ createdAt: 1 }) // Sắp xếp tin nhắn theo thứ tự tăng dần của createdAt
+      .skip(skip)
+      .limit(limit)
+      .populate('senderId', 'phoneNumber displayName avatar');
   
       return {
-        messages: messagesPage,
-        lastFiveMessages: lastFiveMessages
+        messages: messagesPage // Đảo ngược thứ tự của tin nhắn trước khi trả về
       };
-      } catch (error) {
-        throw new Error(error.message);
+    } catch (error) {
+      throw new Error(error.message);
+    }
+  }
   
-  
-  // Usage
-  // const page = 1;
-  // const limit = 5;
-  // const result = await getAllMessages(conversationId, page, limit);
-  // console.log(result.messages); // Current page messages
-  // console.log(result.lastFiveMessages); // Last five messages
-  
-
 }
-  }}
-
 
 const messageService = new MessageService();
 export default messageService;
