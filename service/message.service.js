@@ -76,14 +76,17 @@ class MessageService {
         .limit(limit)
         .populate('senderId', 'phoneNumber displayName avatar');
   
-        
+        const lastFiveMessages = await Message.find({ conversationId })
+        .sort({ createdAt: -1 }) // Sắp xếp theo thời gian tạo giảm dần
+        .limit(5)
+        .populate('senderId', 'phoneNumber displayName avatar');
+  
       return {
-        messages: messagesPage
+        messages: messagesPage,
+        lastFiveMessages: lastFiveMessages
       };
-    } catch (error) {
-      throw new Error(error.message);
-    }
-  }
+      } catch (error) {
+        throw new Error(error.message);
   
   
   // Usage
@@ -95,6 +98,7 @@ class MessageService {
   
 
 }
+  }}
 
 
 const messageService = new MessageService();
