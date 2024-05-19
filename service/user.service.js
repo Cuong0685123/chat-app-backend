@@ -18,38 +18,42 @@ class UserService {
     return userFounded;
   }
 
-    async updateUser(userId, userFields) {
-        try {
-          const updateFields = {};
-          if (userFields.displayName) {
-            updateFields.displayName = userFields.displayName;
-          }
-          if (userFields.avatar) {
-            updateFields.avatar = userFields.avatar;
-          }
-          const updatedUser = await User.findByIdAndUpdate(userId, updateFields, {
-            new: true,
-          });
-    
-          if (!updatedUser) {
-            throw new Error("User not found");
-          }
-    
-          return updatedUser;
-        } catch (error) {
-          throw new Error(error.message);
-        }
+  async updateUser(userId, userFields) {
+    try {
+      const updateFields = {};
+      if (userFields.displayName) {
+        updateFields.displayName = userFields.displayName;
+      }
+      if (userFields.avatar) {
+        updateFields.avatar = userFields.avatar;
       }
 
-      async findUserByPhoneNumber(phoneNumber) {
-        try {
-          const user = await User.findOne({ phoneNumber });
-          return user;
-        } catch (error) {
-          throw new Error(error.message);
-        }
+      if (updateFields.hasOwnProperty("password")) {
+        delete updateFields.password;
       }
-}  
+      const updatedUser = await User.findByIdAndUpdate(userId, updateFields, {
+        new: true,
+        select: "-password",
+      });
+
+      if (!updatedUser) {
+        throw new Error("User not found");
+      }
+
+      return updatedUser;
+    } catch (error) {
+      throw new Error(error.message);
+    }
+  }
+  async findUserByPhoneNumber(phoneNumber) {
+    try {
+      const user = await User.findOne({ phoneNumber });
+      return user;
+    } catch (error) {
+      throw new Error(error.message);
+    }
+  }
+}
 
 const userService = new UserService();
 export default userService;
