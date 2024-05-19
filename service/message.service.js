@@ -66,15 +66,16 @@ class MessageService {
 
 
 
-  async getAllMessages(conversationId, page = 1, limit = 5) {
+  async  getAllMessages(conversationId, page = 1, limit = 5) {
     try {
-      const skip = (page - 1) * limit;
+      const skip = Math.max(0, (page - 1) * limit);
+      const totalMessages = await Message.countDocuments({ conversationId });
+      const totalPages = Math.ceil(totalMessages / limit);
       const messages = await Message.find({ conversationId })
-        .sort({ createdAt: -1 })
+        .sort({ createdAt: -1 }) 
         .skip(skip)
         .limit(limit)
-        .populate('senderId', 'phoneNumber displayName avatar') 
-
+        .populate('senderId', 'phoneNumber displayName avatar');
       const formattedMessages = messages.map((message) => {
         const messageObject = message.toObject();
         if (message.revoked) {
@@ -82,19 +83,15 @@ class MessageService {
             ...messageObject,
             text: null,
             files: null,
-            sender: message.senderId, 
+            sender: message.senderId,
           };
         } else {
           return {
             ...messageObject,
-            sender: message.senderId, 
+            sender: message.senderId,
           };
         }
       });
-
-      const totalMessages = await Message.countDocuments({ conversationId });
-      const totalPages = Math.ceil(totalMessages / limit);
-
       return {
         page,
         totalPages,
@@ -104,7 +101,7 @@ class MessageService {
     } catch (error) {
       throw new Error(error.message);
     }
-}
+  }
 
 }
 
