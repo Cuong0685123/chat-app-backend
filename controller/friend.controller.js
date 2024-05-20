@@ -1,5 +1,7 @@
 import friendService from "../service/friend.service.js";
 import { StatusCodes } from "http-status-codes";
+import User from "../model/user.model.js";
+import Friend from "../model/friend.model.js";
 class FriendController {
   async add(req, res) {
     try {
@@ -52,7 +54,15 @@ class FriendController {
       });
     }
   }
-
+  async getFriendRequests(req, res) {
+    try {
+      const{userId} = req;
+      const friendRequests = await friendService.getPendingFriendRequestsByUserId(userId);
+      res.status(200).json({ friendRequests: friendRequests });
+    } catch (error) {
+      res.status(500).json({ error: `Failed to get friend requests: ${error.message}` });
+    }
+  }
 }
 const friendController = new FriendController();
 export default friendController;

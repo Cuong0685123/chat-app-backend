@@ -14,8 +14,9 @@ class FriendServices {
         receiverId,
       });
       const savedFriendship = await newFriendship.save();
+
       await User.findByIdAndUpdate(senderId, receiverId, {
-        $push: { friends: senderId, receiverId },
+        $push: { friends: senderId, receiverId, friendRequests: senderId },
       });
       return savedFriendship;
     } catch (error) {
@@ -98,9 +99,19 @@ class FriendServices {
     }
   }
 
+  async getPendingFriendRequestsByUserId(userId) {
+    try {
+      const user = await User.findById(userId).populate("friendRequests");
+      if (!user) {
+        throw new Error("User not found");
+      }
 
+      return user.friendRequests;
+    } catch (error) {
+      throw new Error(`Failed to get friend requests: ${error.message}`);
+    }
+  }
 }
-
 
 const friendService = new FriendServices();
 export default friendService;

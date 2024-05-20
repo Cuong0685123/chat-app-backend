@@ -10,6 +10,7 @@ router.post('/',authMiddleware, friendController.add);
 router.put('/:friendId/accept',authMiddleware, friendController.accept);
 router.delete('/:friendId', friendController.delete);
 router.get('/list', authMiddleware,friendController.getFriendList);
+router.get('/', authMiddleware,friendController.getFriendRequests);
 
 
 
