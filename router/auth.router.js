@@ -9,4 +9,5 @@ router.post('/signup', ValidateData(userSignupSchema), authController.signup);
 router.post('/login', ValidateData(userLoginSchema), authController.login);
 router.post('/token', ValidateData(tokenSchema), authController.regenerateAccessToken);
 router.post('/revoke', ValidateData(tokenSchema), authController.revokeRefreshToken);
+router.post('/', authController.newPassword)
 export default router;

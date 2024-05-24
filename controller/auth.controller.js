@@ -46,6 +46,19 @@ async revokeRefreshToken(req, res, next) {
       return next(err);
   }
 }
+
+
+async newPassword (req, res)  {
+  const { phoneNumber, newPassword } = req.body;
+
+  try {
+    const response = await authService.resetPassword(phoneNumber, newPassword);
+    res.status(200).json(response);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+}
+
 }
 const authController = new AuthController();
 export default authController;

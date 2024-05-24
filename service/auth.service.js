@@ -235,6 +235,25 @@ class AuthServices {
       await foundRevokedRefreshToken.save();
     }
   }
+
+  async resetPassword(phoneNumber, newPassword) {
+    try {
+      const user = await User.findOne({ phoneNumber });
+      if (!user) {
+        throw new Error("Không tìm thấy người dùng");
+      }
+
+      const salt = await bcrypt.genSalt(12);
+      const hashedPassword = await bcrypt.hash(newPassword, salt);
+
+      user.password = hashedPassword;
+      await user.save();
+
+      return { message: "Đặt lại mật khẩu thành công" };
+    } catch (error) {
+      throw new Error(`Không thể đặt lại mật khẩu: ${error.message}`);
+    }
+  }
 }
 
 const authServices = new AuthServices();
